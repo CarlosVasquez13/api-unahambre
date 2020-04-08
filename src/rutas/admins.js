@@ -27,7 +27,7 @@ function decodedJWT_admin_usuarios(token, res) {
 /**CVásquez@18MAR2020
  * Retorna todos las solicitudes, de registro de restaurantes, existentes
  */
-router.get('/api/admin_global_mostrar_solicitudes', autenticar, function (req, res, next) {
+router.get('/admin_global_mostrar_solicitudes', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `SELECT idsolicitud, Restaurante_idRestaurante, Descripcion, EstadoSolicitud,
@@ -48,7 +48,7 @@ router.get('/api/admin_global_mostrar_solicitudes', autenticar, function (req, r
 *Si el mensaje está null entonces el usuario se registro correctamente, sino entonces el mensaje
 *no estará vacio.
 */
-router.post('/api/admin_global_insertar_usuario',  autenticar, function (req, res, next) {
+router.post('/admin_global_insertar_usuario',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_INSERTAR_USUARIO(?,?,?,?,?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
@@ -63,10 +63,10 @@ router.post('/api/admin_global_insertar_usuario',  autenticar, function (req, re
 
 // Devuelve la lista de los restaurantes en la DB
 /**
- * /api/g_mostrar_restaurantes
- * /api/restaurantes
+ * /g_mostrar_restaurantes
+ * /restaurantes
  */
-router.get('/api/g_mostrar_restaurantes', function (req, res, next) {
+router.get('/g_mostrar_restaurantes', function (req, res, next) {
 
     const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
 INNER JOIN usuario
@@ -90,7 +90,7 @@ WHERE idUsuario = Usuario_idUsuario`
 ": * "ubicacion":
  * el data.error llevará el mensaje de éxito o fracaso 
  */
-router.post('/api/admin_global_insertar-restaurante', autenticar, function (req, res, next) {
+router.post('/admin_global_insertar-restaurante', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_INSERT_RESTAURANTE(?, ?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
@@ -110,7 +110,7 @@ router.post('/api/admin_global_insertar-restaurante', autenticar, function (req,
   "idRestaurante":
 }
  */
-router.post('/api/admin_global_eliminar_restaurante',  autenticar, function (req, res, next) {
+router.post('/admin_global_eliminar_restaurante',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_ADMIN_ELIMINAR_LOCAL(?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -124,7 +124,7 @@ router.post('/api/admin_global_eliminar_restaurante',  autenticar, function (req
 /** CVásquez@08MAR2020
  * Devuelve toda la información de usuarios y persona en la DB.
  */
-router.get('/api/admin_global_mostrar_usuarios', autenticar, function (req, res, next) {
+router.get('/admin_global_mostrar_usuarios', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `SELECT * FROM Usuario INNER JOIN Persona ON idPersona = Persona_idPersona`;
@@ -141,7 +141,7 @@ router.get('/api/admin_global_mostrar_usuarios', autenticar, function (req, res,
  * Ruta exclusiva para página de admin usuarios
  * en success irá la respuesta si mensaje está null todo funciono correctamente sino hubo algun error y el cambio no se hizo
  */
-router.post('/api/admin_global_editar_usuario', autenticar, function (req, res, next) {
+router.post('/admin_global_editar_usuario', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         if (req.body.usuario == "") req.body.usuario = null;
@@ -165,7 +165,7 @@ router.post('/api/admin_global_editar_usuario', autenticar, function (req, res, 
  * CVasquez@28Mar2020
  * Eliminar usuarios desde la página de admin usuarios, mensaje = null : se borró el usuario
  */
-router.post('/api/admin_global_eliminar_usuario',  autenticar, function (req, res, next) {
+router.post('/admin_global_eliminar_usuario',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_ELIMINAR_USUARIO(?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -181,7 +181,7 @@ router.post('/api/admin_global_eliminar_usuario',  autenticar, function (req, re
  * Retorna las solicitudes que tengan el estadoSolicitud igual al recibido
  * json: {estadoSolicitud: ("En espera", "Aprobada" o "Denegada")}
  */
-router.post('/api/admin_gobal_solicitud_filtro_estado',  autenticar, function (req, res, next) {
+router.post('/admin_gobal_solicitud_filtro_estado',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `SELECT * FROM solicitud INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
@@ -195,7 +195,7 @@ router.post('/api/admin_gobal_solicitud_filtro_estado',  autenticar, function (r
 // CRUD PARA MENÚS
 
 //Retorna todos los menus en la base
-router.get('/api/g_mostrar_menus', autenticar, function (req, res, next) {
+router.get('/g_mostrar_menus', autenticar, function (req, res, next) {
 
     const query = `SELECT * FROM Menu`;
     db.query(query,
@@ -216,7 +216,7 @@ router.get('/api/g_mostrar_menus', autenticar, function (req, res, next) {
  */
 
 
-router.post('/api/admin_global_agregar_menu',  autenticar, function (req, res, next) {
+router.post('/admin_global_agregar_menu',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_INSERTAR_MENU(?, ?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -233,7 +233,7 @@ router.post('/api/admin_global_agregar_menu',  autenticar, function (req, res, n
  * "foto": 
  * }
  */
-router.post('/api/admin_global_editar_menu',  autenticar, function (req, res, next) {
+router.post('/admin_global_editar_menu',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_ADMIN_EDITAR_MENU(?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje;`
@@ -246,7 +246,7 @@ router.post('/api/admin_global_editar_menu',  autenticar, function (req, res, ne
 /**{
  * "idMenu":
  * } */
-router.post('/api/admin_global_borrar_menu',  autenticar, function (req, res, next) {
+router.post('/admin_global_borrar_menu',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_ELIMINAR_MENU(?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -264,7 +264,7 @@ router.post('/api/admin_global_borrar_menu',  autenticar, function (req, res, ne
  * Se devuelve un arreglo en el campo items con los platillos existentes en la base de datos
  */
 
-router.get('/api/g_mostrar_platillos', autenticar, function (req, res, next) {
+router.get('/g_mostrar_platillos', autenticar, function (req, res, next) {
 
     const query = `SELECT * FROM Platillo`;
     db.query(query,
@@ -285,7 +285,7 @@ router.get('/api/g_mostrar_platillos', autenticar, function (req, res, next) {
     }
 )
  */
-router.post('/api/admin_global_agregar_platillo',  autenticar, function (req, res, next) {
+router.post('/admin_global_agregar_platillo',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_INSERTAR_PLATILLO(?, ?, ?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -306,7 +306,7 @@ router.post('/api/admin_global_agregar_platillo',  autenticar, function (req, re
   "idTipoPlatillo": 
 }
  */
-router.post('/api/admin_global_editar_platillo',  autenticar, function (req, res, next) {
+router.post('/admin_global_editar_platillo',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_EDITAR_PLATILLO(?, ?, ?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -322,7 +322,7 @@ router.post('/api/admin_global_editar_platillo',  autenticar, function (req, res
  * }
  */
 // error.affectedRows": si es igual a 1 entonces se logro borrar el platillo si es cero no se borró.
-router.post('/api/admin_global_borrar_platillo', autenticar, function (req, res, next) {
+router.post('/admin_global_borrar_platillo', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol == 0) {
         const query = `DELETE FROM platillo WHERE idPlatillo = ?`
@@ -337,7 +337,7 @@ router.post('/api/admin_global_borrar_platillo', autenticar, function (req, res,
  * {"idUsuario": }
  * 
  */
-router.post('/api/admin_global_eliminar_usuario_restaurante',autenticar, function (req, res, next) {
+router.post('/admin_global_eliminar_usuario_restaurante',autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol == 0) {
         const query = `CALL SP_ADMIN_ELIMINAR_USUARIO_RESTAURANTES(?, @Mensaje); SELECT @Mensaje AS mensaje`
@@ -354,7 +354,7 @@ router.post('/api/admin_global_eliminar_usuario_restaurante',autenticar, functio
 /** CVásquez@17MAR2020
  *Retorna todos los menus y el restaurante al que pertenecen y el dueño del restaurante
  */
-router.get('/api/admin_global_menus_restaurante', autenticar, function (req, res, next) {
+router.get('/admin_global_menus_restaurante', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `SELECT idMenu, Tipo_Menu as Nombre_Menu, Fecha_Registro, Foto_Menu, idCategoria, Nombre_Local, Nombre_Usuario as Dueño_Local FROM Menu INNER JOIN Restaurante
@@ -372,7 +372,7 @@ router.get('/api/admin_global_menus_restaurante', autenticar, function (req, res
  *Retorna todos los platillos que pertenecen a un menu a si como también
  el que pertenecen y el restaurante
  */
-router.get('/api/admin_global_platillos_menu', autenticar, function (req, res, next) {
+router.get('/admin_global_platillos_menu', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `SELECT * FROM Platillo INNER JOIN Menu
@@ -392,7 +392,7 @@ router.get('/api/admin_global_platillos_menu', autenticar, function (req, res, n
  * Si el parametro idRol es incorrecto, items estará vacio y error indicará que ese rol no existe.
  */
 // FILTRO USUARIO POR TIPO ROL
-router.post('/api/admin_global_usuario_filtro_rol', autenticar, function (req, res, next) {
+router.post('/admin_global_usuario_filtro_rol', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_ADMIN_FILTRO_CLIENTES_ROL(?, @MENSAJE);`
