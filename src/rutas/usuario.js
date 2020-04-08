@@ -15,11 +15,11 @@ router.get('/prueba', (req, res, next) => {
     //     console.log(result, error)
     // });   
     // console.log(prueba)
-    let cadena = 'http://res.cloudinary.com/unahambre/image/upload/v1586302326/profile_pics/53165acc-73ae-4419-b439-b5fff6b8329f.jpg'
-    let cadena_split = cadena.split('/')
-    console.log(cadena_split[8])
-    let id_publica = cadena_split[8].substring(0, cadena_split[8].indexOf("."))
-    console.log(id_publica)
+    // let cadena = 'http://res.cloudinary.com/unahambre/image/upload/v1586302326/profile_pics/53165acc-73ae-4419-b439-b5fff6b8329f.jpg'
+    // let cadena_split = cadena.split('/')
+    // console.log(cadena_split[8])
+    // let id_publica = cadena_split[8].substring(0, cadena_split[8].indexOf("."))
+    // console.log(id_publica)
     // console.log(cadena.length)
     // if (cadena.length > 60) {
     //     console.log('holeiesdfs')
@@ -29,7 +29,7 @@ router.get('/prueba', (req, res, next) => {
 
 /**Robindroide 
 POST PARA SUBIR UNA IMAGEN DE PERFIL*/
-router.post('/api/upload-profile-pic', async (req, res, next) => {
+router.post('/upload-profile-pic', autenticar, async (req, res, next) => {
     let file = req.file;
     const id = req.headers['idusuario'];
     let indice = file.filename.indexOf(".")
@@ -74,7 +74,7 @@ router.post('/api/upload-profile-pic', async (req, res, next) => {
 * sino, que gestionen la excepciòn
 */
 // FINAL POST Registrar usuarios
-router.post('/api/registrar_usuario', function (req, res, next) {
+router.post('/registrar_usuario', function (req, res, next) {
     const query = `CALL SP_INSERTAR_USUARIO(?,?,?,?,?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
     db.query(query, [req.body.nombre, req.body.apellido, req.body.celular, req.body.sexo, req.body.numeroIdentidad, req.body.nombreUsuario, req.body.contrasena, req.body.correo],
         function (err, result, rows) {
@@ -90,7 +90,7 @@ router.post('/api/registrar_usuario', function (req, res, next) {
  *Se retorna la info de las tablas usurio y persona
  */
 // /api/info-user
-router.post('/api/informacion_usuario', autenticar, function (req, res, next) {
+router.post('/informacion_usuario', autenticar, function (req, res, next) {
     const query = `SELECT Nombre, Apellidos, Nombre_Usuario, Celular, Sexo, Numero_Identidad, Correo  FROM Usuario
                 INNER JOIN Persona 
                 ON Persona_idPersona = idPersona
@@ -117,7 +117,7 @@ router.post('/api/informacion_usuario', autenticar, function (req, res, next) {
   "nuevoApellido": "Primero" }
  */
 // /api/cambiar-info-usuario
-router.put('/api/cambiar_informacion_usuario', autenticar, function (req, res, next) {
+router.put('/cambiar_informacion_usuario', autenticar, function (req, res, next) {
     if (req.body.nuevoUsuario == "") req.body.nuevoUsuario = null;
     if (req.body.celular == "") req.body.celular = null;
     if (req.body.nuevoNombre == "") req.body.nuevoNombre = null;
@@ -136,7 +136,7 @@ router.put('/api/cambiar_informacion_usuario', autenticar, function (req, res, n
  *También se comprueba si la contraseña actual es la correcta, sino el cambio no se realiza
  *error. mensaje llevará la respuesta para frontend.
  */
-router.post('/api/cambiar-contrasena', autenticar, function (req, res, next) {
+router.post('/cambiar-contrasena', autenticar, function (req, res, next) {
     const query = `CALL SP_CAMBIAR_CONTRASENA(?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
 
     db.query(query, [req.body.usuario, req.body.contrasena, req.body.nueva_contrasena],
@@ -163,7 +163,7 @@ router.post('/api/cambiar-contrasena', autenticar, function (req, res, next) {
  * Si el correo ingresado existe, entonces se le enviará la contraseña al usuario a dicho correo
  * devuelve un 1 o 0  para frontend
  */
-router.post('/api/checkcorreo', function (req, res, next) {
+router.post('/recuperar_password', function (req, res, next) {
     const query = 'CALL SP_VERIFICAR_CORREO(?, @Mensaje); SELECT @MENSAJE AS mensaje';
     db.query(query, [req.body.correo],
         function (err, result) {

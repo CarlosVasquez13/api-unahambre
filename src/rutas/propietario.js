@@ -14,7 +14,7 @@ const respuesta = require('../models/respuesta')
 
 
 /* POST Insertar Platillo */
-router.post('/api/insertar-platillo', autenticar, function (req, res, next) {
+router.post('/insertar-platillo', autenticar, function (req, res, next) {
     const query = `CALL SP_INSERTAR_PLATILLO(?,?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
     db.query(query, [req.body.descripcion, req.body.idMenu, req.body.nombre, req.body.precio, req.body.tipoPlatillo],
         function (err, result, rows) {
@@ -25,7 +25,7 @@ router.post('/api/insertar-platillo', autenticar, function (req, res, next) {
 
 /**Robindroide
 /* POST Insertar Menu */
-router.post('/api/insertar-menu', autenticar, function (req, res, next) {
+router.post('/insertar-menu', autenticar, function (req, res, next) {
     const query = `CALL SP_INSERTAR_MENU(?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
     db.query(query, [req.body.tipoMenu, req.body.idRestaurante, req.body.fotoMenu, req.body.idCategoria],
         function (err, result, rows) {
@@ -43,7 +43,7 @@ router.post('/api/insertar-menu', autenticar, function (req, res, next) {
  *Se recibe el idRestaurante.
  *El error llevará la respuesta, si error.mensaje no está null, entonces ocurrió un problema y no se borro el local.
  */
-router.put('/api/g-borrar-local', autenticar, function (req, res, next) {
+router.put('/g-borrar-local', autenticar, function (req, res, next) {
     const query = `CALL SP_ADMIN_ELIMINAR_LOCAL(?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
     db.query(query, [req.body.idRestaurante],
         function (err, result) {
@@ -55,7 +55,7 @@ router.put('/api/g-borrar-local', autenticar, function (req, res, next) {
 /**Robindroide
 MODIFICAR PLATILLOS PARA ADMIN
 */
-router.put('/api/admin_local_modificar-platillo', autenticar, function (req, res, next) {
+router.put('/admin_local_modificar-platillo', autenticar, function (req, res, next) {
     const query = `CALL SP_LOCAL_EDITAR_PLATILLO(?, ?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
     db.query(query, [req.body.descripcion, req.body.nombrePlatillo, req.body.precio, req.body.fotoPlatillo, req.body.idMenu, req.body.idTipoPlatillo],
         function (err, result) {
@@ -74,7 +74,7 @@ router.put('/api/admin_local_modificar-platillo', autenticar, function (req, res
 /**Robindroide
 MODIFICAR RESTAURANTE
 */
-router.put('/api/admin_global_modificar-local', autenticar, router, function (req, res, next) {
+router.put('/admin_global_modificar-local', autenticar, router, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_ADMIN_EDITAR_RESTAURANTE(?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
@@ -86,7 +86,7 @@ router.put('/api/admin_global_modificar-local', autenticar, router, function (re
 })
 /**Robindroide
 * Eliminar un platillo, recibe el idPlatillo*/
-router.post('/api/g-eliminar-platillo', autenticar, function (req, res, next) {
+router.post('/g-eliminar-platillo', autenticar, function (req, res, next) {
     const query = `CALL SP_ELIMINAR_PLATILLO(?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
     db.query(query, [req.body.idPlatillo],
         function (err, result) {
@@ -109,7 +109,7 @@ router.post('/api/g-eliminar-platillo', autenticar, function (req, res, next) {
  *En el error irá la respuesta de la petición para frontend, si error.mensaje != null entonces ocurrió un problema
  * y no se borro el menú.
  */
-router.post('/api/eliminar-menu', autenticar, function (req, res, next) {
+router.post('/eliminar-menu', autenticar, function (req, res, next) {
     const query = `CALL SP_ELIMINAR_MENU(?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
     db.query(query, [req.body.idMenu],
         function (err, result) {
@@ -118,7 +118,7 @@ router.post('/api/eliminar-menu', autenticar, function (req, res, next) {
 })
 
 /** JFunez@30MAR2020**/
-router.post('/api/platillosRestaurante', autenticar, function (req, res, next) {
+router.post('/platillosRestaurante', autenticar, function (req, res, next) {
     const query = `SELECT * FROM platillo 
   INNER JOIN menu ON platillo.Menu_idMenu = menu.idMenu
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
@@ -129,7 +129,7 @@ router.post('/api/platillosRestaurante', autenticar, function (req, res, next) {
 })
 
 /** JFunez@30MAR2020**/
-router.post('/api/menusRestaurante', autenticar, function (req, res, next) {
+router.post('/menusRestaurante', autenticar, function (req, res, next) {
     const query = `SELECT * FROM menu 
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
   WHERE restaurante.idRestaurante = ?`
@@ -139,7 +139,7 @@ router.post('/api/menusRestaurante', autenticar, function (req, res, next) {
 })
 
 /** JFunez@30MAR2020**/
-router.post('/api/platillosRestaurante', autenticar, function (req, res, next) {
+router.post('/platillosRestaurante', autenticar, function (req, res, next) {
     const query = `SELECT * FROM platillo 
   INNER JOIN menu ON platillo.Menu_idMenu = menu.idMenu
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
@@ -149,7 +149,7 @@ router.post('/api/platillosRestaurante', autenticar, function (req, res, next) {
     })
 })
 
-router.post('/api/restauranteUsuario', autenticar, function (req, res, next) {
+router.post('/restauranteUsuario', autenticar, function (req, res, next) {
     const query = `SELECT * FROM Restaurante WHERE Usuario_idUsuario = ` + req.body.idUsuario;
     db.query(query,
         function (err, result) {
@@ -169,7 +169,7 @@ router.post('/api/restauranteUsuario', autenticar, function (req, res, next) {
 });
 
 /** JFunez@30MAR2020**/
-router.get('/api/tipo-platillos', autenticar, function (req, res, next) {
+router.get('/tipo-platillos', autenticar, function (req, res, next) {
     const query = `SELECT * FROM tipo_platillo`;
     db.query(query,
         function (err, result) {
@@ -180,7 +180,7 @@ router.get('/api/tipo-platillos', autenticar, function (req, res, next) {
 })
 
 
-router.post('/api/admin_global_editar_menu', autenticar, function (req, res, next) {   
+router.post('/admin_global_editar_menu', autenticar, function (req, res, next) {   
         const query = `CALL SP_ADMIN_EDITAR_MENU(?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje;`
         db.query(query, [req.body.idMenu, req.body.nombre, req.body.foto],
             function (err, result) {
@@ -189,7 +189,7 @@ router.post('/api/admin_global_editar_menu', autenticar, function (req, res, nex
  })
 
 
-router.put('/api/admin-borrar-local', autenticar, function (req, res, next) {
+router.put('/admin-borrar-local', autenticar, function (req, res, next) {
     const query = `CALL SP_ADMIN_ELIMINAR_LOCAL(?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
     db.query(query, [req.body.idRestaurante],
         function (err, result) {
@@ -200,7 +200,7 @@ router.put('/api/admin-borrar-local', autenticar, function (req, res, next) {
 /**Robindroide
 MODIFICAR PLATILLOS PARA ADMIN
 */
-router.put('/api/admin_local_modificar-platillo', autenticar, function (req, res, next) {
+router.put('/admin_local_modificar-platillo', autenticar, function (req, res, next) {
     const query = `CALL SP_LOCAL_EDITAR_PLATILLO(?, ?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
     db.query(query, [req.body.descripcion, req.body.nombrePlatillo, req.body.precio, req.body.fotoPlatillo, req.body.idMenu, req.body.idTipoPlatillo],
         function (err, result) {
