@@ -219,14 +219,8 @@ router.put('/admin_local_modificar-platillo', autenticar, function (req, res, ne
 
 
 /** CVasquez@09ABR2020**/
-/**IN PV_PLATILLOS VARCHAR(255),
-IN PI_ID_USUARIO INT,
-IN PI_ID_METODO_PAGO INT,
-IN PV_UBICACION VARCHAR(200),
-IN PV_TIEMPO_ESTIMADO VARCHAR(200),
-OUT PV_MENSAJE VARCHAR(2000)) 
-platillos, idUsuario, idMetodoPago, ubicacion, tiempoEstimado */
-router.post('/admin_local_agregar_pedido', autenticar, function (req, res, next) {
+/*platillos":, "idUsuario":, "idMetodoPago":, "ubicacion":, "tiempoEstimado": */
+router.post('/agregar_pedido', autenticar, function (req, res, next) {
     const query = `CALL SP_INSERTAR_PEDIDO(?, ?, ?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje;`
     db.query(query, [req.body.platillos, req.body.idUsuario, req.body.idMetodoPago, req.body.ubicacion, req.body.tiempoEstimado],
         function (err, result) {
