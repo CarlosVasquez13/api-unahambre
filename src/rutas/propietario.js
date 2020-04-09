@@ -116,7 +116,38 @@ router.post('/eliminar-menu', autenticar, function (req, res, next) {
             respuesta.respuestaError(err, result, res)
         })
 })
+/** JFunez@09ABR2020 */
+router.post('/pedidosRestaurante', autenticar, function (req,res,next){
+    const query = `SELECT p.Fecha_Registro, pl.Nombre, p.Ubicacion, pd.Estado, p.idCompra, pd.idPedido_Detalle FROM pedido p 
+    INNER JOIN pedido_detalle pd on p.idCompra = pd.Pedido_idCompra
+    INNER JOIN platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
+    INNER JOIN menu m on pl.Menu_idMenu = m.idMenu
+    INNER JOIN restaurante r on m.Restaurante_idRestaurante = r.idRestaurante
+    WHERE m.Restaurante_idRestaurante = ? AND pd.estado <> '' AND p.estado <> 'H'`
+    db.query(query, [req.body.idRestaurante], function(err,result){
+        respuesta.respuestaItems(err,result,res)
+    })
+})
 
+/** JFunez@09ABR2020 */
+router.put('/cambiarEstadoPedido', autenticar, function(req,res,next){
+    const query = ` UPDATE pedido_detalle
+                    SET Estado = ? 
+                    WHERE  idPedido_Detalle = ?`
+    db.query(query, [req.body.nuevoEstado, req.body.idPedidoDetalle], function(err, result){
+        respuesta.respuestaError(err, result, res)
+    })
+})
+
+/** JFunez@09ABR2020 */
+router.post('/moverPedidosAHistorial', autenticar, function(req,res){
+    const query = `UPDATE pedido
+                   SET estado = 'H'
+                   WHERE idCompra = ? `
+    db.query(query, [req.body.idCompra], function(err, result){
+        respuesta.respuestaError(err,result,res)
+    })
+})
 /** JFunez@30MAR2020**/
 router.post('/platillosRestaurante', autenticar, function (req, res, next) {
     const query = `SELECT * FROM platillo 
