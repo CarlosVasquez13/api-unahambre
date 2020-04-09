@@ -124,7 +124,7 @@ router.post('/platillosRestaurante', autenticar, function (req, res, next) {
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
   WHERE restaurante.idRestaurante = ?`
     db.query(query, [req.body.idRestaurante], function (err, result) {
-        respuestaItems(err, result, res)
+        respuesta.respuestaItems(err, result, res)
     })
 })
 
@@ -134,7 +134,8 @@ router.post('/menusRestaurante', autenticar, function (req, res, next) {
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
   WHERE restaurante.idRestaurante = ?`
     db.query(query, [req.body.idRestaurante], function (err, result) {
-        respuestaItems(err, result, res)
+        
+        respuesta.respuestaItems(err, result, res)
     })
 })
 
@@ -145,7 +146,8 @@ router.post('/platillosRestaurante', autenticar, function (req, res, next) {
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
   WHERE restaurante.idRestaurante = ?`
     db.query(query, [req.body.idRestaurante], function (err, result) {
-        respuestaItems(err, result, res)
+        
+        respuesta.respuestaItems(err, result, res)
     })
 })
 
@@ -173,7 +175,7 @@ router.get('/tipo-platillos', autenticar, function (req, res, next) {
     const query = `SELECT * FROM tipo_platillo`;
     db.query(query,
         function (err, result) {
-            respuestaItems(err, result, res)
+            respuesta.respuestaItems(err, result, res)
         }
     )
 
@@ -184,7 +186,7 @@ router.post('/admin_global_editar_menu', autenticar, function (req, res, next) {
         const query = `CALL SP_ADMIN_EDITAR_MENU(?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje;`
         db.query(query, [req.body.idMenu, req.body.nombre, req.body.foto],
             function (err, result) {
-                respuestaError(err, result, res)
+               respuesta.respuestaError(err, result, res)
         })
  })
 
