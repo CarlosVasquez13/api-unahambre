@@ -66,7 +66,7 @@ router.post('/admin_global_insertar_usuario',  autenticar, function (req, res, n
  * /g_mostrar_restaurantes
  * /restaurantes
  */
-router.get('/g_mostrar_restaurantes', function (req, res, next) {
+router.get('/g_mostrar_restaurantes',autenticar, function (req, res, next) {
 
     const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
 INNER JOIN usuario
@@ -101,8 +101,18 @@ router.post('/admin_global_insertar-restaurante', autenticar, function (req, res
     }
 })
 
+    // CVasquez@09Abr2020
 
-
+router.post('/modificar-local', autenticar, function (req, res, next) {
+    const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    if (rol === 0) {
+        const query = `CALL SP_ADMIN_EDITAR_RESTAURANTE(?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
+        db.query(query, [req.body.idRestaurante ,req.body.nombreRestaurante, req.body.telefono, req.body.ubicacion, req.body.correo],
+            function (err, result) {
+                respuesta.respuestaError(err, result, res)
+            })
+    }
+})
 /**
  * CVasquez@30Mar2020
  *

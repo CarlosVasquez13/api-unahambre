@@ -71,18 +71,14 @@ router.put('/admin_local_modificar-platillo', autenticar, function (req, res, ne
             }
         })
 })
-/**Robindroide
-MODIFICAR RESTAURANTE
-*/
-router.put('/admin_global_modificar-local', autenticar, router, function (req, res, next) {
-    const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
-    if (rol === 0) {
-        const query = `CALL SP_ADMIN_EDITAR_RESTAURANTE(?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
-        db.query(query, [req.body.nombreRestaurante, req.body.telefono, req.body.ubicacion, req.body.idUsuario],
+
+// MODIFICAR RESTAURANTE
+router.post('/modificar-local', autenticar, function (req, res, next) {
+        const query = `CALL SP_ADMIN_EDITAR_RESTAURANTE(?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
+        db.query(query, [req.body.idRestaurante, req.body.nombreRestaurante, req.body.telefono, req.body.ubicacion, req.body.correo],
             function (err, result) {
-                respuestaError(err, result, res)
+                respuesta.respuestaError(err, result, res)
             })
-    }
 })
 /**Robindroide
 * Eliminar un platillo, recibe el idPlatillo*/
