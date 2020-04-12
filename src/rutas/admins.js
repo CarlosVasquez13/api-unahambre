@@ -5,6 +5,10 @@ const db = require('../connection/conexion')
 const autenticar = require('../middlewares/autentication')
 const jwt = require('jsonwebtoken')
 const respuesta = require('../models/respuesta')
+const cloudinary = require('../configs/credenciales')
+const fs = require('fs-extra');
+
+
 
 
 // CVásquez@1ABR2020
@@ -22,6 +26,13 @@ function decodedJWT_admin_usuarios(token, res) {
     }
     return { id, rol }
 }
+
+router.get('/prueba', (req, res, next) => {
+    res.send({"mensaje": "Ruta para realizar pruebas"})
+})
+
+
+
 // CVásquez@18MAR2020
 /***************************Servicios admin global**************************** */
 /**CVásquez@18MAR2020
@@ -242,12 +253,16 @@ router.post('/admin_global_agregar_menu',  autenticar, function (req, res, next)
  * "nombre": ,
  * "foto": 
  * }
+ * Actualización editar idCategoria 
  */
 router.post('/admin_global_editar_menu',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
-        const query = `CALL SP_ADMIN_EDITAR_MENU(?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje;`
-        db.query(query, [req.body.idMenu, req.body.nombre, req.body.foto],
+        if (req.body.idCategoria == "") {
+            req.body.idCategoria = null
+        }
+        const query = `CALL SP_ADMIN_EDITAR_MENU(?, ?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje;`
+        db.query(query, [req.body.idMenu, req.body.nombre, req.body.foto, req.body.idCategoria],
             function (err, result) {
                 respuesta.respuestaError (err, result, res)
             })
@@ -345,7 +360,7 @@ router.post('/admin_global_borrar_platillo', autenticar, function (req, res, nex
 
 /**
  * {"idUsuario": }
- * 
+ * Elimina un usuario y los restaurantes que le pertenezcan, asi como los menus y platillos. 
  */
 router.post('/admin_global_eliminar_usuario_restaurante',autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
@@ -419,6 +434,46 @@ router.post('/admin_global_usuario_filtro_rol', autenticar, function (req, res, 
     }
 })
 
-
+/**********************************RUTAS PARA CAMBIAR LAS FOTOS, PERFIL, PLATILLOS, MENÚS, RESTAURANTES**************************************************** */
+/**
+ * headers: idPlatillo, token
+ */
+router.post('/cambiar_foto_platillo', autenticar, async (req, res, next) => {
+    
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    let file = req.file;
+    let id = req.headers['id-platillo'];
+    let indice = file.filename.indexOf(".")
+    let id_publica = file.filename.substring(0, indice)
+    const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'platillo', user_filename: true })
+    const query = `SELECT Foto_Platillo FROM platillo Where idPlatillo = ?;
+                    UPDATE platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
+    db.query(query, [id, resultado_cloudinary.url, id],
+        async function (err, result) {            
+            if (!err) {
+                console.log('Image Uploaded');
+                const old_image = result[0][0].Foto_Platillo
+                let id_publica                
+                if (old_image != null) {
+                    if (old_image.length > 60) {
+                        let old_image_split = old_image.split('/')                                                                
+                        id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))                  
+                    }
+                }    
+                try {
+                    // Borra la vieja foto de perfil 
+                    let eliminar = await cloudinary.uploader.destroy('platillo/' + id_publica, function (error, result) {
+                        console.log(result, error)
+                    });
+                } catch (error) {
+                    console.log('complete')
+                }
+            }
+            
+        });
+        fs.unlink(file.path);
+        // console.log(result.url);
+    res.send(resultado_cloudinary.url);
+});
 
 module.exports = router
