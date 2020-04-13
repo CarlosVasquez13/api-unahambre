@@ -1,4 +1,6 @@
-/*** Aquí estarán las rutas para :
+/*** 
+ * /api_producto/..
+ * Aquí estarán las rutas para :
  * mostrar información en el landing.
  * mostrar información en la pag de menus.
  * ruta para registrar un nuevo restaurante.
@@ -86,6 +88,57 @@ router.get('/g_mostrar_platillos', function (req, res, next) {
            respuesta.respuestaItems(err, result, res)           
         })
 });
+
+
+
+
+
+/***********<<<<PRUEBAS, BORRAR LUEGO>>>>************************ */
+/**
+ * CVasquez@04MAR2020
+ * retorna los datos del restaurante y el propietario
+ */
+router.post('/datos_restaurante_propietario', (req, res, next) => {
+    
+    const query = `SELECT restaurante.Nombre_Local, restaurante.Foto_Restaurante, restaurante.Correo, restaurante.Telefono, restaurante.Ubicacion, usuario.Foto_Perfil, persona.Nombre, persona.Apellidos FROM restaurante INNER JOIN usuario 
+                    ON Usuario_idUsuario = idUsuario
+                    INNER JOIN persona
+                    ON usuario.Persona_idPersona = persona.idPersona
+                    WHERE idRestaurante = ?;`
+    db.query(query, [req.body.idRestaurante],
+        function (err, result) {
+            console.log(result)
+            respuesta.respuestaItems(err, result, res)
+        })
+})
+
+/**
+ * CVasquez@04MAR2020
+ *Retorna los menus que pertenecen a un restaurante
+ *idRestaurante
+ */
+router.post('/menus_restaurante', (req, res, next) => {
+    const query = `SELECT idMenu, Tipo_Menu, Foto_Menu FROM menu 
+                    WHERE Restaurante_idRestaurante = ?`
+    db.query(query, [req.body.idRestaurante],
+        function (err, result){
+            respuesta.respuestaItems(err, result, res)
+        })
+})
+
+/**
+ * CVasquez@04MAR2020
+ *Retorna los platillos que pertenecen a un menu
+ *idMenu
+ */
+router.post('/platillos_menu', (req, res, next) => {
+    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio FROM platillo 
+                    WHERE Menu_idMenu = ?`
+    db.query(query, [req.body.idMenu],
+        function (err, result) {
+            respuesta.respuestaItems(err, result, res)
+        })
+})
 
 
 

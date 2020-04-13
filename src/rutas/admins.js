@@ -20,13 +20,14 @@ function decodedJWT_admin_usuarios(token, res) {
     if (rol != 0) {
         let resultado = jsonResult
         resultado.error = 'usuario no autorizado'
-        // 401 Unauthorized
+        // // 401 Unauthorized
         res.status(401).send(resultado)
 
     }
     return { id, rol }
 }
 
+/**RUta para pruebas */
 router.get('/prueba', (req, res, next) => {
     res.send({"mensaje": "Ruta para realizar pruebas"})
 })
@@ -435,45 +436,145 @@ router.post('/admin_global_usuario_filtro_rol', autenticar, function (req, res, 
 })
 
 /**********************************RUTAS PARA CAMBIAR LAS FOTOS, PERFIL, PLATILLOS, MENÚS, RESTAURANTES**************************************************** */
+
 /**
- * headers: idPlatillo, token
+ * CVásquez@12ABR2020
+ * headers: id-platillo, access-token
  */
 router.post('/cambiar_foto_platillo', autenticar, async (req, res, next) => {
     
     const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     let file = req.file;
-    let id = req.headers['id-platillo'];
-    let indice = file.filename.indexOf(".")
-    let id_publica = file.filename.substring(0, indice)
-    const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'platillo', user_filename: true })
-    const query = `SELECT Foto_Platillo FROM platillo Where idPlatillo = ?;
-                    UPDATE platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
-    db.query(query, [id, resultado_cloudinary.url, id],
-        async function (err, result) {            
-            if (!err) {
-                console.log('Image Uploaded');
-                const old_image = result[0][0].Foto_Platillo
-                let id_publica                
-                if (old_image != null) {
-                    if (old_image.length > 60) {
-                        let old_image_split = old_image.split('/')                                                                
-                        id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))                  
+    if (rol === 0) {
+
+        let id = req.headers['id-platillo'];
+        let indice = file.filename.indexOf(".")
+        let id_publica = file.filename.substring(0, indice)
+        const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'platillo', user_filename: true })
+        const query = `SELECT Foto_Platillo FROM platillo Where idPlatillo = ?;
+                        UPDATE platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
+        db.query(query, [id, resultado_cloudinary.url, id],
+            async function (err, result) {            
+                if (!err) {
+                    console.log('Image Uploaded');
+                    const old_image = result[0][0].Foto_Platillo
+                    let id_publica                
+                    if (old_image != null) {
+                        if (old_image.length > 60) {
+                            let old_image_split = old_image.split('/')                                                                
+                            id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))                  
+                        }
+                    }    
+                    try {
+                        // Borra la vieja foto de perfil 
+                        let eliminar = await cloudinary.uploader.destroy('platillo/' + id_publica, function (error, result) {
+                            console.log(result, error)
+                        });
+                    } catch (error) {
+                        console.log('complete')
                     }
-                }    
-                try {
-                    // Borra la vieja foto de perfil 
-                    let eliminar = await cloudinary.uploader.destroy('platillo/' + id_publica, function (error, result) {
-                        console.log(result, error)
-                    });
-                } catch (error) {
-                    console.log('complete')
                 }
-            }
-            
-        });
+                
+            });
+            res.send(resultado_cloudinary.url);
+        }
         fs.unlink(file.path);
         // console.log(result.url);
-    res.send(resultado_cloudinary.url);
 });
+
+/**
+ * CVásquez@12ABR2020
+ * headers: id-menu, access-token
+ */
+router.post('/cambiar_foto_menu', autenticar, async (req, res, next) => {
+
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    let file = req.file;
+    if (rol === 0) {
+        let id = req.headers['id-menu'];
+        let indice = file.filename.indexOf(".")
+        let id_publica = file.filename.substring(0, indice)
+        const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'menus', user_filename: true })
+        const query = `SELECT Foto_Menu FROM menu Where idMenu = ?;
+                        UPDATE menu SET Foto_Menu = ? WHERE idMenu = ?`;
+        db.query(query, [id, resultado_cloudinary.url, id],
+            async function (err, result) {
+                if (!err) {
+                    console.log('Image Uploaded');
+                    const old_image = result[0][0].Foto_Menu
+                    let id_publica
+                    if (old_image != null) {
+                        if (old_image.length > 60) {
+                            let old_image_split = old_image.split('/')
+                            id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))
+                        }
+                    }
+                    try {
+                        // Borra la vieja foto de perfil 
+                        let eliminar = await cloudinary.uploader.destroy('menus/' + id_publica, function (error, result) {
+                            console.log(result, error)
+                        });
+                    } catch (error) {
+                        console.log('complete')
+                    }
+                }
+
+            });
+
+            // console.log(result.url);
+            res.send(resultado_cloudinary.url);
+    }
+    fs.unlink(file.path);
+});
+
+/**
+ * CVásquez@12ABR2020
+ * headers: id-restaurante, access-token
+ */
+
+// restaurant
+router.post('/cambiar_foto_restaurante', autenticar, async (req, res, next) => {
+
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    let file = req.file;
+    if (rol === 0) {
+        let id = req.headers['id-restaurante'];
+            let indice = file.filename.indexOf(".")
+            let id_publica = file.filename.substring(0, indice)
+        const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'restaurant', user_filename: true })
+            const query = `SELECT Foto_Restaurante FROM restaurante Where idRestaurante = ?;
+                            UPDATE restaurante SET Foto_Restaurante = ? WHERE idRestaurante = ?`;
+            db.query(query, [id, resultado_cloudinary.url, id],
+                async function (err, result) {
+                    if (!err) {
+                        console.log('Image Uploaded');
+                        const old_image = result[0][0].Foto_Restaurante
+                        let id_publica
+                        if (old_image != null) {
+                            if (old_image.length > 60) {
+                                let old_image_split = old_image.split('/')
+                                id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))
+                            }
+                        }
+                        try {
+                            // Borra la vieja foto de perfil 
+                            let eliminar = await cloudinary.uploader.destroy('restaurant/' + id_publica, function (error, result) {
+                                console.log(result, error)
+                            });
+                        } catch (error) {
+                            console.log('complete')
+                        }
+                    }
+
+                });
+
+            // console.log(result.url);
+            res.send(resultado_cloudinary.url);
+    }
+    fs.unlink(file.path);
+});
+
+
+
 
 module.exports = router

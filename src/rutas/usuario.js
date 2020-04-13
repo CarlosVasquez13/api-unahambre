@@ -149,9 +149,7 @@ router.post('/cambiar-contrasena', autenticar, function (req, res, next) {
                 resultado.items = null
                 res.send("error al cambiar la contraseña" + resultado)
             } else {
-                resultado.items = null
-                resultado.error = result
-                res.send(resultado)
+                respuesta.respuestaError(err, result, res)
             }
 
         })
