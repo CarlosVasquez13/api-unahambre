@@ -204,7 +204,7 @@ router.post('/recuperar_password', function (req, res, next) {
 })
 
 //Stripe checkout
-app.post('/checkout', async (req, res) => {
+router.post('/checkout', async (req, res) => {
     console.log(req.body);
     const customer = await stripe.customers.create({
         email: req.body.stripeEmail,
