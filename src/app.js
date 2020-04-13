@@ -5,7 +5,7 @@ const config = require('./configs/config')
 const storage = require('./configs/storage')
 const path = require('path');
 const multer = require('multer');//Modulo para gestion de imagenes
-
+const stripe = require('stripe')('sk_test_8RToGBQRvYSJg6X3ECqb4oWB00pZaqEHvz');
 
 
 const app = express()

@@ -203,6 +203,21 @@ router.post('/recuperar_password', function (req, res, next) {
         })
 })
 
-
+//Stripe checkout
+app.post('/checkout', async (req, res) => {
+    console.log(req.body);
+    const customer = await stripe.customers.create({
+        email: req.body.stripeEmail,
+        source: req.body.stripeToken
+    });
+    const charge = await stripe.charges.create({
+        amount: '3000',//Ejemplo directo
+        currency: 'usd',//cambiar a LPS
+        customer: customer.id,
+        description: 'Comida'
+    });
+    console.log(charge.id);
+    res.send('Received');
+})
 
 module.exports = router
