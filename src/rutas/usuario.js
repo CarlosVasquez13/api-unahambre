@@ -206,13 +206,14 @@ router.post('/recuperar_password', function (req, res, next) {
 //Stripe checkout
 router.post('/checkout', async (req, res) => {
     console.log(req.body);
+    const cargoTotal = req.body.cargoTotal;
     const customer = await stripe.customers.create({
         email: req.body.stripeEmail,
         source: req.body.stripeToken
     });
     const charge = await stripe.charges.create({
-        amount: '3000',//Ejemplo directo
-        currency: 'usd',//cambiar a LPS
+        amount: cargoTotal,
+        currency: 'hnl',
         customer: customer.id,
         description: 'Comida'
     });
