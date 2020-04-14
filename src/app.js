@@ -49,13 +49,14 @@ const login = require('./rutas/login')
 const control = require('./rutas/control-navegacion')
 const ruta_propietario = require('./rutas/propietario')
 const productos = require('./rutas/restaurante')
+const pago = require('./rutas/stripe')
 app.use('/api_usuario', ruta_usuario)           //Para solicitudes que tengan que ver con mostrar o modificar datos de usuarios
 app.use('/api_admin', ruta_admins)              //Página de administración de usuarios
 app.use('/api_login', login)                //solo para el logueo, de cualquier usuario.
 app.use('/api_control', control)                //Controlar la navegación en las paginas.
 app.use('/api_propietario', ruta_propietario)   //Página de administración de restaurante
 app.use('/api_producto', productos)             //Para mostrar restaurantes, platillos, menus,.. a los usuarios comunes(rol 2). Pag landing y menus
-
+app.use('/api_pago', pago)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

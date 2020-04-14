@@ -220,4 +220,10 @@ router.post('/checkout', async (req, res) => {
     res.send('Received');
 })
 
+router.post('/pago', (req, res, next) => {
+    console.log('holasdfa')
+    console.log(req.body)
+    res.redirect('https://web-unahambre.herokuapp.com/login.html')
+} )
+
 module.exports = router

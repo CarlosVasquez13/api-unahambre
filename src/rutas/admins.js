@@ -238,7 +238,7 @@ router.get('/g_mostrar_menus', autenticar, function (req, res, next) {
  */
 
 
-router.post('/admin_global_agregar_menu',  autenticar, function (req, res, next) {
+router.post('/admin_global_agregar_menu',  function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
         const query = `CALL SP_INSERTAR_MENU(?, ?, ?, ?, @Mensaje); SELECT @Mensaje AS mensaje`
