@@ -132,7 +132,7 @@ router.post('/menus_restaurante', (req, res, next) => {
  *idMenu
  */
 router.post('/platillos_menu', (req, res, next) => {
-    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio FROM platillo 
+    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM platillo 
                     WHERE Menu_idMenu = ?`
     db.query(query, [req.body.idMenu],
         function (err, result) {
