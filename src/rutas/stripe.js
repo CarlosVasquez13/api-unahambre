@@ -16,11 +16,11 @@ function decodedJWT_all_usuarios(token) {
     const rol = token_decoded.rol
     return { id, rol }
 }
- 
+
 /****************<<<<<<<<Pagos con tarjeta >>>>>>>>>>>>********** */
 /**CVásquez@18MAR2020 */
 const stripe = require('stripe')('sk_test_smJBw722C61JXaVJaIq4EwZl00rXkBU89f');
-router.post('/realizar_pago' , autenticar, (req, res) => {
+router.post('/realizar_pago', autenticar, (req, res) => {
     const { id, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
     const query = `CALL SP_INSERTAR_PEDIDO(?, ?, ?, ?, ?, @Mensaje);
                     SELECT @Mensaje as mensaje;
@@ -28,9 +28,9 @@ router.post('/realizar_pago' , autenticar, (req, res) => {
     db.query(query, [req.body.idProductos, id, 1, req.body.ubicacion, req.body.tiempo],
         (err, result) => {
             let resultado = jsonResult
-            resultado.error = null 
+            resultado.error = null
             resultado.item = null
-            if(err){
+            if (err) {
                 resultado.error = result[1][0].mensaje
                 res.send(resultado)
             } else {
@@ -49,29 +49,29 @@ router.post('/realizar_pago' , autenticar, (req, res) => {
                     // });
                     // console.log(paymentMethods)
                     // console.log(req.body)
-                     const session = await stripe.checkout.sessions.create({
-                    //     // payment_intent_data: {
-                    //     //     setup_future_usage: 'off_session',
-                    //     // },
+                    const session = await stripe.checkout.sessions.create({
+                        //     // payment_intent_data: {
+                        //     //     setup_future_usage: 'off_session',
+                        //     // },
                         payment_method_types: ['card'],
                         line_items: [{
-                             name: req.body.nombre, //'T-shirt',
-                             description: req.body.descripcion, //'Comfortable cotton t-shirt',
+                            name: req.body.nombre, //'T-shirt',
+                            description: req.body.descripcion, //'Comfortable cotton t-shirt',
                             images: ['https://res.cloudinary.com/unahambre/image/upload/v1586934314/menus/29e972b2-5d61-4b03-9e0d-4c1558b9efd0.png'], //     ['https://example.com/t-shirt.png'],
-                             amount: (req.body.monto * 100),
-                             currency: 'hnl',
-                                quantity: 1,
-                         }],
-                         success_url: 'https://web-unahambre.herokuapp.com/index.html',
-                         cancel_url: 'https://web-unahambre.herokuapp.com/index.html',
-                     });
+                            amount: (req.body.monto * 100),
+                            currency: 'hnl',
+                            quantity: 1,
+                        }],
+                        success_url: 'https://web-unahambre.herokuapp.com/success.html',
+                        cancel_url: 'https://web-unahambre.herokuapp.com/cancel.html',
+                    });
                     //  console.log(session)
                     res.send(session)
-                    })();
+                })();
 
 
             }
-          
+
         })
     // res.send('recibido....')
 
