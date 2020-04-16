@@ -62,8 +62,8 @@ router.post('/realizar_pago', autenticar, (req, res) => {
                             currency: 'hnl',
                             quantity: 1,
                         }],
-                        success_url: 'http://127.0.0.1:5500/success.html',
-                        cancel_url: 'http://127.0.0.1:5500/cancel.html',
+                        success_url: 'https://webunahambre.herokuapp.com/success.html',
+                        cancel_url: 'https://webunahambre.herokuapp.com/cancel.html',
                     });
                     //  console.log(session)
                     res.send(session)
