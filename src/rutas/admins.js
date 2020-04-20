@@ -36,25 +36,6 @@ router.get('/prueba', (req, res, next) => {
 
 // CVásquez@18MAR2020
 /***************************Servicios admin global**************************** */
-/**CVásquez@18MAR2020
- * Retorna todos las solicitudes, de registro de restaurantes, existentes
- */
-router.get('/admin_global_mostrar_solicitudes', autenticar, function (req, res, next) {
-    const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
-    if (rol === 0) {
-        const query = `SELECT idsolicitud, Restaurante_idRestaurante, Descripcion, EstadoSolicitud,
-      FechaSolicitud, idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, EstadoRestaurante,
-      Usuario_idUsuario, Nombre_Usuario
-      FROM solicitud INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
-                        INNER JOIN usuario ON Usuario_idUsuario = idUsuario;`
-        db.query(query,
-            function (err, result) {
-                // respuesta.respuestaItems(err, result, res)
-                respuesta.respuestaItems(err, result, res)
-            })
-    }
-})
-
 /**
 * CVasquez@28Mar2020
 *Si el mensaje está null entonces el usuario se registro correctamente, sino entonces el mensaje
@@ -574,6 +555,95 @@ router.post('/cambiar_foto_restaurante', autenticar, async (req, res, next) => {
     fs.unlink(file.path);
 });
 
+
+/************************************Servicios para manejo de las solicitudes***************************************** */
+/**CVásquez@18MAR2020
+ * Retorna todos las solicitudes, de registro de restaurantes, existentes
+ */
+router.get('/admin_global_mostrar_solicitudes', autenticar, function (req, res, next) {
+    const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    if (rol === 0) {
+        const query = `SELECT idsolicitud, Restaurante_idRestaurante, Descripcion, EstadoSolicitud,
+      FechaSolicitud, idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, EstadoRestaurante,
+      Usuario_idUsuario, Nombre_Usuario
+      FROM solicitud INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
+                        INNER JOIN usuario ON Usuario_idUsuario = idUsuario;`
+        db.query(query,
+            function (err, result) {
+                // respuesta.respuestaItems(err, result, res)
+                respuesta.respuestaItems(err, result, res)
+            })
+    }
+})
+
+/**
+ * CVásquez@18MAR2020
+ * {"idSolicitud": }
+ */
+router.post('/aceptar_solicitud', autenticar, function (req, res, next) {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    const query = `CALL SP_APROBAR_SOLICITUD(?,?, @MENSAJE)`
+    if (rol === 0 ){
+        db.query(query, [idAdmin, req.body.idSolicitud],
+            (err, result) => {
+                if(!err) {
+                    // Nota_cambios : Notificar al cliente por correo
+                    respuesta.respuestaError(err, result, res)
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+        })
+
+    } else {
+        res.send({"mensaje": "No tienes los permisos necesarios para realizar esta acción"})
+    }
+})
+
+/**
+ * CVásquez@18MAR2020
+ * {"idSolicitud": }
+ */
+router.post('/rechazar_solicitud', autenticar, function (req, res, next) {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    const query = `CALL SP_RECHAZAR_SOLICITUD(?,?, @MENSAJE)`
+    if (rol === 0) {
+        db.query(query, [idAdmin, req.body.idSolicitud],
+            (err, result) => {
+                if (!err) {
+                    // Nota_cambios : Notificar al cliente por correo
+                    respuesta.respuestaError(err, result, res)
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+            })
+
+    } else {
+        res.send({ "mensaje": "No tienes los permisos necesarios para realizar esta acción" })
+    }
+})
+
+
+/**
+ * CVásquez@18MAR2020
+ * {"idSolicitud": }
+ */
+router.post('/eliminar_solicitud', autenticar, function (req, res, next) {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    const query = `CALL SP_ELIMINAR_SOLICITUD(?,?, @MENSAJE)`
+    if (rol === 0) {
+        db.query(query, [idAdmin, req.body.idSolicitud],
+            (err, result) => {
+                if (!err) {
+                    respuesta.respuestaError(err, result, res)
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+            })
+
+    } else {
+        res.send({ "mensaje": "No tienes los permisos necesarios para realizar esta acción" })
+    }
+})
 
 
 
