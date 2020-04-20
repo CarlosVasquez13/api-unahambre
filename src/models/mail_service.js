@@ -1,27 +1,29 @@
 const nodemailer = require('nodemailer')
+const jsonResult = require('../models/result')
 
 
 /** CVásquez@08MAR2020*/
 // Se crea el objeto transporte 
 var transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
+  service: 'gmail',
+    // port: 587,
     auth: {
-        user: 'euna.leannon56@ethereal.email',
-        pass: 'ZETX554BJAxsNhUexN'
+        user: 'unahambre.is@gmail.com',
+        pass: 'unahambre_IPAC2020'
     }
 });
 
-function enviar_correo(mensaje, correo, resultado, res){
+async function enviar_correo(mensaje, correo, res){
+    let resultado = jsonResult
     var mailOptions = {
-        from: 'soporte.unahambre@gmail.com',
+        from: '"Equipo Unahambre" <unahambre.is@gmail.com>',
         to: correo,
-        subject: 'Soporte UNAHAMBRE',
-        text: mensaje,
+        subject: "Servicios unahambre",
+        // text: mensaje,
         html: mensaje
     }
     var estado_envio = null
-    transporter.sendMail(mailOptions, function (error, info) {
+    await transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             // console.log(error)
             // console.log('no se completo la operación, intentalo más tarde')

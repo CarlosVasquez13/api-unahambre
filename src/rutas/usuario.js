@@ -10,21 +10,9 @@ const cloudinary = require('../configs/credenciales')
 const fs = require('fs-extra');
 
 
-router.get('/prueba', (req, res, next) => {
-    // const prueba = await cloudinary.uploader.destroy('profile_pics/d3382f98-dbca-40cf-9fab-250cfa669284', function (error, result) {
-    //     console.log(result, error)
-    // });   
-    // console.log(prueba)
-    // let cadena = 'http://res.cloudinary.com/unahambre/image/upload/v1586302326/profile_pics/53165acc-73ae-4419-b439-b5fff6b8329f.jpg'
-    // let cadena_split = cadena.split('/')
-    // console.log(cadena_split[8])
-    // let id_publica = cadena_split[8].substring(0, cadena_split[8].indexOf("."))
-    // console.log(id_publica)
-    // console.log(cadena.length)
-    // if (cadena.length > 60) {
-    //     console.log('holeiesdfs')
-    // }
-    res.send({"mensaje": "prueba completada"})
+router.post('/prueba', (req, res, next) => {
+
+    res.send({"mensaje": "prueba completada  "})
 })
 
 /**Robindroide 
@@ -78,6 +66,20 @@ router.post('/registrar_usuario', function (req, res, next) {
     const query = `CALL SP_INSERTAR_USUARIO(?,?,?,?,?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
     db.query(query, [req.body.nombre, req.body.apellido, req.body.celular, req.body.sexo, req.body.numeroIdentidad, req.body.nombreUsuario, req.body.contrasena, req.body.correo],
         function (err, result, rows) {
+            if (!err) {
+                // Nota_cambios : agregar contenido al mensaje, por ahora no es posible crear una activación por correo
+                var mensaje = `<div>
+                                <h1>Hola ${req.body.nombreUsuario}</h1>
+                                <h2>Gracias por registrarte en nuestra plataforma.</h2>
+                               </div>
+                `
+                try {
+                    enviar_correo(mensaje, req.body.correo, res)
+
+                } catch (error) {
+                 console.log(error)
+                }
+            }
             respuesta.respuestaError(err, result, res)
         }
     );
@@ -166,40 +168,50 @@ router.post('/recuperar_password', function (req, res, next) {
     db.query(query, [req.body.correo],
         function (err, result) {
             let resultado = jsonResult;
-            resultado.items = null
-            resultado.error = result
-
-            if (resultado.error[1][0].mensaje != null) {
-                var mensaje = `
-              <div style="background-color: #dcd6f7; width: 50%; height: 100%; text-align: center; justify-content: center; border-radius: 1rem; padding: 1rem;">
-                  <div>
-                      <h3>Tu contraseña Unahambre</h3>
-                      <p>Has solicitado recuperar tu contraseña</p>
-                      <p style="justify-content: center;">
-                          Tu contraseña es:
-                      </p>
-                      <div">
-                          
-                          <h4 style="padding: 1rem; background-color: azure;">${ resultado.error[1][0].mensaje}</h4>
-
-                      </div>
-                    
+            if (!err) {
+                resultado.items = null
+                resultado.error = result
+                
+                if (resultado.error[1][0].mensaje != null) {
+                    var mensaje = `
+                  <div style="background-color: #dcd6f7; width: 50%; height: 100%; text-align: center; justify-content: center; border-radius: 1rem; padding: 1rem;">
                       <div>
-                          <a href="http://127.0.0.1:5500/login.html" style="text-decoration: none; background-color: #f8615a; padding: .5rem; color: white; border-radius: 0.4rem;">Login UNAHAMBRE</a>
+                          <h3>Servicios Unahambre</h3>
+                          <p>Has solicitado recuperar tu contraseña</p>
+                          <p style="justify-content: center;">
+                              Tu contraseña es:
+                          </p>
+                          <div">
+                              
+                              <h4 style="padding: 1rem; background-color: azure;">${ resultado.error[1][0].mensaje}</h4>
+    
+                          </div>
+                        
+                          <div>
+                              <a href="https://webunahambre.herokuapp.com/login.html" style="text-decoration: none; background-color: #f8615a; padding: .5rem; color: white; border-radius: 0.4rem;">Login UNAHAMBRE</a>
+                          </div>
+                          <hr>
+                          <p>Servicios UNAHAMBRE.</p>
+                          <P>Gracias.</P>
                       </div>
-                      <p>Servicios UNAHAMBRE.</p>
-                      <P>Gracias.</P>
                   </div>
-              </div>
-        `;
-                enviar_correo(mensaje, req.body.correo, resultado, res)
+            `;
+                    enviar_correo(mensaje, req.body.correo, res)
+                    // res.send(resultado)
+                } else {
+                    // console.log('El correo no existe')
+                    // res.send('0')
+                    resultado.error = 'el correo ingresado no está registrado'
+                    resultado.success = false
+                    res.send(resultado)
+                }
+                
             } else {
-                // console.log('El correo no existe')
-                // res.send('0')
-                resultado.error = 'el correo ingresado no está registrado'
-                resultado.success = false
+                resultado.error = null
+                resultado.error = err
                 res.send(resultado)
             }
+
         })
 })
 

@@ -24,15 +24,20 @@ function respuestaSuccess(err, result, res) {
 
 function respuestaError (err, result, res) {
     let resultado = jsonResult
-    if (err) resultado.error = err;
-    if (result == undefined) {
-        resultado.error = null
+    resultado.error = null
+    resultado.items = null
+    resultado.item = null
+    if (err){
+        resultado.error = err;  
         res.send(resultado)
     } else {
-        resultado.item = null
-        resultado.items = null
-        resultado.error = result
-        res.send(resultado)
+        if (result == undefined) {
+            resultado.error = null
+            res.send(resultado)
+        } else {
+            resultado.error = result
+            res.send(resultado)
+        }
     }
 
 }

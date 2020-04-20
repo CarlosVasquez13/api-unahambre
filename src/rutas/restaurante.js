@@ -12,6 +12,8 @@ const router = express.Router()
 const db = require('../connection/conexion')
 const autenticar = require('../middlewares/autentication')
 const respuesta = require('../models/respuesta')
+const enviar_correo = require('../models/mail_service')
+
 
 
 
@@ -32,6 +34,20 @@ router.post('/g_insertar-restaurante', autenticar, function (req, res, next) {
         const query = `CALL SP_INSERT_RESTAURANTE(?, ?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
         db.query(query, [req.body.idUsuario, req.body.rolUsuario, req.body.nombreRestaurante, req.body.telefono, req.body.correo, req.body.ubicacion],
             function (err, result) {
+                if(!err) {
+                    // mensaje del correo a enviar al usuario
+                    var mensaje = `Estimado cliente, le agradecemos por elegir trabajar con nosotros, pronto nos pondremos 
+                                    en contacto contigo para realizar las debidas verificaciones de tu negocio. Agradecemos la espera. Atte: Rquipo Unahambre
+                                    `    
+                    enviar_correo(mensaje, req.body.correo, res)
+                   
+                    /**
+                     * Nota_cambios: crear otro estado para el restaurante y verificar el rol del cliente
+                     * Mejorar el mensaje a enviar al cliente
+                     * 
+                     */
+                                    
+                }
                 respuesta.respuestaError(err, result, res)
         })
 })
