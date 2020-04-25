@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken')
 const respuesta = require('../models/respuesta')
 const autenticar = require('../middlewares/autentication')
 
+const stripe = require('stripe')('sk_test_smJBw722C61JXaVJaIq4EwZl00rXkBU89f');
+
 /**************************************************************** */
 // CVásquez@1ABR2020
 // Sacar el id y rol del usuario que hace la petición. 
@@ -17,13 +19,60 @@ function decodedJWT_all_usuarios(token) {
     return { id, rol }
 }
 
-/****************<<<<<<<<Pagos con tarjeta >>>>>>>>>>>>********** */
+
+async function calc_total_pedido(idPedido) {
+    let total
+    const query = `SELECT SUM(Precio) as total FROM pedido_detalle INNER JOIN platillo
+    ON idPlatillo =  Platillo_idPlatillo
+    WHERE Pedido_idCompra = ?;
+    `
+
+    db.query(query, [idPedido],
+        (err, result) => {
+            if (!err) {
+                total = result[0].total
+            }
+        })
+    await new Promise((resolve, reject) => setTimeout(resolve, 500));
+    return (total)
+
+}
+
+// obtener las fotos de los platillos del pedido
+async function obtener_fotos_platillos(idPedido) {
+    const query = `SELECT Foto_Platillo FROM platillo INNER JOIN pedido_detalle
+                ON idPlatillo = Platillo_idPlatillo
+                WHERE Pedido_idCompra = ?;`
+    let fotos = [];
+   db.query(query,[idPedido], (err, result) => {
+        if (!err) {
+            for (let index = 0; index < result.length; index++) {
+                fotos[index] = result[index].Foto_Platillo               
+            }
+
+        }
+    })
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000));
+    return fotos
+}
+router.get('/prueba', function (req, res, next) {
+    (async () => {
+        let total = await obtener_fotos_platillos(47)
+        res.send({ "mensaje": total })
+    })();
+    // await new Promise((resolve, reject) => setTimeout(resolve, 500));
+
+
+})
+
+
+/****************<<<<<<<<Pagos de pedidos con tarjeta >>>>>>>>>>>>********** */
 /**CVásquez@18MAR2020 */
-const stripe = require('stripe')('sk_test_smJBw722C61JXaVJaIq4EwZl00rXkBU89f');
 router.post('/realizar_pago', autenticar, (req, res) => {
     const { id, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
     const query = `CALL SP_INSERTAR_PEDIDO(?, ?, ?, ?, ?, @Mensaje);
                     SELECT @Mensaje as mensaje;
+                    SELECT MAX(Pedido_idCompra) AS idPedido FROM pedido_detalle;
                     `
     db.query(query, [req.body.idProductos, id, 1, req.body.ubicacion, req.body.tiempo],
         (err, result) => {
@@ -34,40 +83,46 @@ router.post('/realizar_pago', autenticar, (req, res) => {
                 resultado.error = result[1][0].mensaje
                 res.send(resultado)
             } else {
+                
                 (async () => {
 
-                    // const customer = await stripe.customers.create({
-                    //     email: req.body.stripeEmail,
-                    //     source: req.body.stripeToken
-                    // });
-                    // console.log(customer.id)
-
-
-                    // const paymentMethods = await stripe.paymentMethods.list({
-                    //     customer: customer.id,
-                    //     type: 'card',
-                    // });
-                    // console.log(paymentMethods)
-                    // console.log(req.body)
-                    const session = await stripe.checkout.sessions.create({
-                        //     // payment_intent_data: {
-                        //     //     setup_future_usage: 'off_session',
-                        //     // },
-                        payment_method_types: ['card'],
-                        line_items: [{
-                            name: req.body.nombre, //'T-shirt',
-                            description: req.body.descripcion, //'Comfortable cotton t-shirt',
-                            images: ['https://res.cloudinary.com/unahambre/image/upload/v1586934314/menus/29e972b2-5d61-4b03-9e0d-4c1558b9efd0.png'], //     ['https://example.com/t-shirt.png'],
-                            amount: (req.body.monto * 100),
-                            currency: 'hnl',
-                            quantity: 1,
-                        }],
-                        success_url: 'https://webunahambre.herokuapp.com/success.html',
-                        cancel_url: 'https://webunahambre.herokuapp.com/cancel.html',
-                    });
-                    //  console.log(session)
-                    res.send(session)
+                    let fotos_platillos = await obtener_fotos_platillos(result[2][0].idPedido);
+                    let total = await calc_total_pedido(result[2][0].idPedido);
+                     (async () => {
+                         // const customer = await stripe.customers.create({
+                         //     email: req.body.stripeEmail,
+                         //     source: req.body.stripeToken
+                         // });
+                         // console.log(customer.id)
+     
+     
+                         // const paymentMethods = await stripe.paymentMethods.list({
+                         //     customer: customer.id,
+                         //     type: 'card',
+                         // });
+                         // console.log(paymentMethods)
+                         // console.log(req.body)
+                         const session = await stripe.checkout.sessions.create({
+                             //     // payment_intent_data: {
+                             //     //     setup_future_usage: 'off_session',
+                             //     // },
+                             payment_method_types: ['card'],
+                             line_items: [{
+                                 name: req.body.nombre, //'T-shirt',
+                                 description: req.body.descripcion, //'Comfortable cotton t-shirt',
+                                 images: fotos_platillos, //     ['https://example.com/t-shirt.png'],
+                                 amount: (total * 100),
+                                 currency: 'hnl',
+                                 quantity: 1,
+                             }],
+                             success_url: 'https://webunahambre.herokuapp.com/success.html',
+                             cancel_url: 'https://webunahambre.herokuapp.com/cancel.html',
+                         });
+                         //  console.log(session)
+                         res.send(session)
+                     })();
                 })();
+             
 
 
             }
