@@ -10,6 +10,7 @@ const cloudinary = require('../configs/credenciales')
 const fs = require('fs-extra');
 
 
+// ruta para pruebas
 router.post('/prueba', (req, res, next) => {
 
     res.send({"mensaje": "prueba completada  "})
@@ -65,7 +66,7 @@ router.post('/upload-profile-pic', autenticar, async (req, res, next) => {
 router.post('/registrar_usuario', function (req, res, next) {
     const query = `CALL SP_INSERTAR_USUARIO(?,?,?,?,?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
     db.query(query, [req.body.nombre, req.body.apellido, req.body.celular, req.body.sexo, req.body.numeroIdentidad, req.body.nombreUsuario, req.body.contrasena, req.body.correo],
-        function (err, result, rows) {
+        async function (err, result, rows) {
             if (!err) {
                 // Nota_cambios : agregar contenido al mensaje, por ahora no es posible crear una activación por correo
                 var mensaje = `<div>
@@ -74,7 +75,7 @@ router.post('/registrar_usuario', function (req, res, next) {
                                </div>
                 `
                 try {
-                    enviar_correo(mensaje, req.body.correo, res)
+                   let mail = await enviar_correo(mensaje, req.body.correo)
 
                 } catch (error) {
                  console.log(error)
@@ -166,7 +167,7 @@ router.post('/cambiar-contrasena', autenticar, function (req, res, next) {
 router.post('/recuperar_password', function (req, res, next) {
     const query = 'CALL SP_VERIFICAR_CORREO(?, @Mensaje); SELECT @MENSAJE AS mensaje';
     db.query(query, [req.body.correo],
-        function (err, result) {
+        async function (err, result) {
             let resultado = jsonResult;
             if (!err) {
                 resultado.items = null
@@ -196,7 +197,16 @@ router.post('/recuperar_password', function (req, res, next) {
                       </div>
                   </div>
             `;
-                    enviar_correo(mensaje, req.body.correo, res)
+                    let notificacion_mail = await enviar_correo(mensaje, req.body.correo)
+                    if (notificacion_mail == true) {
+                        resultado.error = null;
+                        resultado.success = true;
+                        res.send(resultado)
+                    } else {
+                        resultado.error = 'No fue posible realizar la recuperación de la contraseña. Intentalo más tarde.'
+                        resultado.success = false;
+                        res.send(resultado)
+                    }
                     // res.send(resultado)
                 } else {
                     // console.log('El correo no existe')

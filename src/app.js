@@ -49,7 +49,7 @@ const login = require('./rutas/login')
 const control = require('./rutas/control-navegacion')
 const ruta_propietario = require('./rutas/propietario')
 const productos = require('./rutas/restaurante')
-const pago = require('./rutas/stripe')
+const pago = require('./rutas/pedido_pago')
 app.use('/api_usuario', ruta_usuario)           //Para solicitudes que tengan que ver con mostrar o modificar datos de usuarios
 app.use('/api_admin', ruta_admins)              //Página de administración de usuarios
 app.use('/api_login', login)                //solo para el logueo, de cualquier usuario.

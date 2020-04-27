@@ -11,14 +11,19 @@ const router = express.Router()
 
 function respuestaSuccess(err, result, res) {
     let resultado = jsonResult
-    if (err) resultado.error = err;
-    if (result == undefined) {
-        resultado.success = null
+    if (err){
+        resultado.items.null
+        resultado.error = err;
         res.send(resultado)
     } else {
-        resultado.success = result
-        resultado.error = null
-        res.send(resultado)
+        if (result == undefined) {
+            resultado.success = null
+            res.send(resultado)
+        } else {
+            resultado.success = result
+            resultado.error = null
+            res.send(resultado)
+        }
     }
 }
 
@@ -39,7 +44,6 @@ function respuestaError (err, result, res) {
             res.send(resultado)
         }
     }
-
 }
 /**
  * 
@@ -47,16 +51,25 @@ function respuestaError (err, result, res) {
  */
 function respuestaItems(err, result, res) {
     let resultado = jsonResult
-    if (err) resultado.error = err;
-    if (result == undefined) {
+    resultado.error = null
+    resultado.items = null
+    resultado.item = null
+    if (err){
         resultado.items = null
+        resultado.error = err
         res.send(resultado)
     } else {
-        resultado.item = null
-        resultado.items = result
-        resultado.error = null
-        res.send(resultado)
+        if (result == undefined) {
+            resultado.items = null
+            res.send(resultado)
+        } else {
+            resultado.item = null
+            resultado.items = result
+            resultado.error = null
+            res.send(resultado)
+        }
     }
+        
 }
 
 

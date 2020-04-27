@@ -6,6 +6,7 @@ const autenticar = require('../middlewares/autentication')
 const jwt = require('jsonwebtoken')
 const respuesta = require('../models/respuesta')
 const cloudinary = require('../configs/credenciales')
+const enviar_correo = require('../models/mail_service')
 const fs = require('fs-extra');
 
 
@@ -28,7 +29,11 @@ function decodedJWT_admin_usuarios(token, res) {
 }
 
 /**RUta para pruebas */
-router.get('/prueba', (req, res, next) => {
+router.get('/prueba', async (req, res, next) => {
+    let resultado = await enviar_correo('hola', 'carlos1305vasquez@gmail.com')
+    console.log('==============================')
+    console.log('correo enviado, supongamos xD')
+    console.log(resultado)
     res.send({"mensaje": "Ruta para realizar pruebas"})
 })
 
@@ -611,6 +616,9 @@ router.post('/rechazar_solicitud', autenticar, function (req, res, next) {
             (err, result) => {
                 if (!err) {
                     // Nota_cambios : Notificar al cliente por correo
+                    // (async() => {
+                    //     await enviar_correo(mensaje, correo, res)
+                    // })();
                     respuesta.respuestaError(err, result, res)
                 } else {
                     respuesta.respuestaError(err, result, res)
