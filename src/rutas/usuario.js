@@ -243,4 +243,41 @@ router.post('/checkout', async (req, res) => {
     res.send('Received');
 })
 
+/** Robindroide@29ABRIL2020
+ * INSERTAR VALORACION DE UN PLATILLO
+ */
+router.post('/insertar-valoracion-platillo', autenticar, function (req, res, next) {
+    const query = `CALL SP_INSERTAR_VALORACION_PLATILLO(?,?,?,@Mensaje);Select @Mensaje as mensaje`;
+    db.query(query, [req.body.idUsuario, req.body.idPlatillo, req.body.valoracion],
+        function (err, result, rows) {
+            respuesta.respuestaError(err, result, res)
+        }
+    );
+});
+
+/** Robindroide@29ABRIL2020
+ * EDITAR VALORACION DE UN PLATILLO
+ */
+router.put('/modificar-valoracion-platillo', autenticar, function (req, res, next) {
+    const query = `CALL SP_EDITAR_VALORACION_PLATILLO(?,?,?,@Mensaje);Select @Mensaje as mensaje`;
+    db.query(query, [req.body.idUsuario, req.body.idPlatillo, req.body.valoracion],
+        function (err, result, rows) {
+            respuesta.respuestaError(err, result, res)
+        }
+    );
+});
+
+/** Robindroide@29ABRIL2020
+ * MOSTRAR VALORACION DE UN PLATILLO
+ */
+router.get('/mostrar-valoracion-platillo', function (req, res, next) {
+    const query = `SELECT Valoracion_Gplatillo FROM platillo WHERE idPlatillo = ?;
+                    `;
+    db.query(query, [req.body.idPlatillo],
+        function (err, result) {
+            respuesta.respuestaItems(err, result, res)
+        }
+    )
+});
+
 module.exports = router
