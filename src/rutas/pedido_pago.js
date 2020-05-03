@@ -82,12 +82,14 @@ router.post('/realizar_pago', autenticar, (req, res) => {
             resultado.item = null
             if (err) {
                 resultado.error = result[1][0].mensaje
-                res.send(resultado)
+                res.send(resultado.error)
             } else {
                 if(req.body.metodoPago === 1) {
                     // si se pagará en efectivo
-                    resultado.error = result
-                    res.send(result)
+                    resultado.error = result[1][0].mensaje
+                    resultado.item = result[2][0].idPedido
+                    res.send({ "error": resultado.error, "item": resultado.item })
+
                 } else {
                     // PAGO CON TARJETA
                     (async () => {
@@ -125,7 +127,7 @@ router.post('/realizar_pago', autenticar, (req, res) => {
                                  cancel_url: 'https://webunahambre.herokuapp.com/cancel.html',
                              });
                              //  console.log(session)
-                             res.send(session)
+                             res.send({ "id": session, "idPedido": result[2][0].idPedido})
                          })();
                     })();
                  
@@ -140,8 +142,6 @@ router.post('/realizar_pago', autenticar, (req, res) => {
 
 })
 
-/****************<<<<<<<<Pagos de pedidos con efectivo >>>>>>>>>>>>********** */
-
 
 
 /****************<<<<<<<<Comprobar pago >>>>>>>>>>>>********** */
@@ -150,10 +150,10 @@ router.post('/realizar_pago', autenticar, (req, res) => {
 IN PI_ID_PEDIDO INT,
 IN PB_ESTADO_PAGO BOOL, */
 router.post('/verificar_pago', autenticar, (req, res, next) => {
-    const { id, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
+    const { idUsuario, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
     const query = `CALL SP_VERIFICAR_PAGO(?, ?, ?, @MENSAJE);
                     `
-    db.query(query, [id, req.body.idPedido, req.body.estadoPago], 
+    db.query(query, [idUsuario, req.body.idPedido, req.body.estadoPago], 
         (err, result) => {
             if (!err) {
                 respuesta.respuestaError(err, result, res)

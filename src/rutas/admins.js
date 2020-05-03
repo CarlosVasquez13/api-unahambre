@@ -587,7 +587,7 @@ router.get('/admin_global_mostrar_solicitudes', autenticar, function (req, res, 
  */
 router.post('/aceptar_solicitud', autenticar, function (req, res, next) {
     const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
-    const query = `CALL SP_APROBAR_SOLICITUD(?,?, @MENSAJE)`
+    const query = `CALL SP_ACEPTAR_SOLICITUD(?,?, @MENSAJE)`
     if (rol === 0 ){
         db.query(query, [idAdmin, req.body.idSolicitud],
             (err, result) => {
@@ -653,6 +653,16 @@ router.post('/eliminar_solicitud', autenticar, function (req, res, next) {
     }
 })
 
+
+/*********************< Servicio para mostrar historial de transacciones >***************************/
+
+router.post('/historial_transacciones', autenticar, function (req, res, next) {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+    const query = `CALL SP_HISTORIAL_TRANSACCIONES(?,?, @Mensaje)`
+    if (rol === 0) {
+        db.query(query, )
+    }
+})
 
 
 module.exports = router
