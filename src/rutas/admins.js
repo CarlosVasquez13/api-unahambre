@@ -656,9 +656,15 @@ router.post('/eliminar_solicitud', autenticar, function (req, res, next) {
 
 /*********************< Servicio para mostrar historial de transacciones >***************************/
 
-router.post('/mostrar_historial_transacciones', autenticar, function (req, res, next) {
+router.get('/mostrar_historial_transacciones', autenticar, function (req, res, next) {
     const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
-    const query = `SELECT * FROM historial_transaccion`
+    const query = `SELECT idHistorial_Transaccion, Pedido_idPedido, Monto, Restaurante_idRestaurante, Fecha_Transaccion,
+                    Nombre_Local, Nombre_Usuario
+                    FROM historial_transaccion
+                    INNER JOIN restaurante ON idRestaurante = historial_transaccion.Restaurante_idRestaurante
+                    INNER JOIN pedido ON idCompra = Pedido_idPedido
+                    INNER JOIN usuario ON idUsuario = Id_Usuario
+                `
     if (rol === 0) {
         db.query(query, 
             (err, result) => {
