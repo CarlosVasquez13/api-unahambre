@@ -151,11 +151,12 @@ IN PI_ID_PEDIDO INT,
 IN PB_ESTADO_PAGO BOOL, */
 router.post('/verificar_pago', autenticar, (req, res, next) => {
     const { idUsuario, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
-    const query = `CALL SP_VERIFICAR_PAGO(?, ?, ?, @MENSAJE);
+    const query = `CALL SP_VERIFICAR_PAGO(?, ?, @MENSAJE);
                     `
-    db.query(query, [idUsuario, req.body.idPedido, req.body.estadoPago], 
+    db.query(query, [req.body.idPedido, req.body.estadoPago], 
         (err, result) => {
             if (!err) {
+                console.log(result)
                 respuesta.respuestaError(err, result, res)
             }
         })

@@ -16,6 +16,17 @@ router.post('/prueba', (req, res, next) => {
     res.send({"mensaje": "prueba completada  "})
 })
 
+
+// CVásquez@03MAY2020
+// Sacar el id y rol del usuario que hace la petición. 
+function decodedJWT_all_usuarios(token) {
+    const token_decoded = jwt.verify(token, 'llave')
+    const id = token_decoded.id
+    const rol = token_decoded.rol
+    return { id, rol }
+}
+
+
 /**Robindroide 
 POST PARA SUBIR UNA IMAGEN DE PERFIL*/
 router.post('/upload-profile-pic', autenticar, async (req, res, next) => {
@@ -279,5 +290,21 @@ router.get('/mostrar-valoracion-platillo', function (req, res, next) {
         }
     )
 });
+
+router.get('/mostrar_pedidos', autenticar, (req, res, next) => {
+    const { id, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
+    const query = `
+                    SELECT idCompra, pedido.Fecha_Registro as fecha, Metodo_Pago_idMetodo_Pago, Ubicacion, Tiempo_Estimado, pedido.Estado,
+                    Nombre, Descripcion, Valoracion_Gplatillo, Foto_Platillo
+                    FROM pedido
+                    INNER JOIN pedido_detalle ON Pedido_idCompra = idCompra
+                    INNER JOIN platillo ON idPlatillo = Platillo_idPlatillo
+                    WHERE Id_Usuario = ?;
+                `
+    db.query(query, [id],
+        (err, result) => {
+            respuesta.respuestaItems(err, result, res)
+        } )
+})  
 
 module.exports = router
