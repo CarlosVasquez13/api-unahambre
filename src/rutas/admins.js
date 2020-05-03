@@ -656,11 +656,18 @@ router.post('/eliminar_solicitud', autenticar, function (req, res, next) {
 
 /*********************< Servicio para mostrar historial de transacciones >***************************/
 
-router.post('/historial_transacciones', autenticar, function (req, res, next) {
+router.post('/mostrar_historial_transacciones', autenticar, function (req, res, next) {
     const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
-    const query = `CALL SP_HISTORIAL_TRANSACCIONES(?,?, @Mensaje)`
+    const query = `SELECT * FROM historial_transaccion`
     if (rol === 0) {
-        db.query(query, )
+        db.query(query, 
+            (err, result) => {
+                if (!err) {
+                    respuesta.respuestaItems(err, result, res) 
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+            })
     }
 })
 
