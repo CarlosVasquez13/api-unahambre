@@ -62,7 +62,7 @@ router.post('/g_insertar-restaurante', autenticar, function (req, res, next) {
  */
 router.get('/g_mostrar_restaurantes', function (req, res, next) {
 
-    const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
+    const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Foto_Restaurante, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
                 INNER JOIN usuario
                 ON idUsuario = Usuario_idUsuario 
                 WHERE EstadoRestaurante = 'activo'
@@ -96,9 +96,8 @@ router.get('/g_mostrar_menus', function (req, res, next) {
 router.get('/g_mostrar_platillos', function (req, res, next) {
     const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
                     INNER JOIN menu ON Menu_idMenu = idMenu
-                    INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante;
-                    WHERE EstadoRestaurante = 'activo';
-    `;
+                    INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
+                    WHERE EstadoRestaurante = "Activo";`
     db.query(query,
         function (err, result) {
            respuesta.respuestaItems(err, result, res)           
