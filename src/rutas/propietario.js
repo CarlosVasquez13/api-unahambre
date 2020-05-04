@@ -125,6 +125,44 @@ router.post('/pedidosRestaurante', autenticar, function (req,res,next){
     })
 })
 
+/** JFunez@03MAY2020 */
+router.post('/historialEspecificoRestaurante', autenticar, function (req,res,next){
+    const query = `SELECT p.Fecha_Registro, pl.Nombre, p.Ubicacion, pd.Estado, p.idCompra, pd.idPedido_Detalle FROM pedido p 
+    INNER JOIN pedido_detalle pd on p.idCompra = pd.Pedido_idCompra
+    INNER JOIN platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
+    INNER JOIN menu m on pl.Menu_idMenu = m.idMenu
+    INNER JOIN restaurante r on m.Restaurante_idRestaurante = r.idRestaurante
+    WHERE m.Restaurante_idRestaurante = ? AND pd.estado <> '' AND p.estado = 'H'`
+    db.query(query, [req.body.idRestaurante], function(err,result){
+        respuesta.respuestaItems(err,result,res)
+    })
+})
+
+/** JFunez@03MAY2020 */
+router.post('/historialGeneralRestaurante', autenticar, function (req,res,next){
+    const query = `SELECT DISTINCT ht.Pedido_idPedido, ht.Monto, ht.Fecha_Transaccion, p.Metodo_Pago_idMetodo_Pago FROM historial_transaccion ht
+    INNER JOIN pedido p on ht.Pedido_idPedido = p.idCompra
+    WHERE ht.Restaurante_idRestaurante = ? AND p.Estado = 'H'`
+    db.query(query, [req.body.idRestaurante], function(err,result){
+        respuesta.respuestaItems(err,result,res)
+    })
+})
+
+
+
+/** JFunez@03MAY2020 */
+router.post('/obtenerPedidoDetalle', autenticar, function (req,res,next){
+    const query = `SELECT p.Fecha_Registro, pl.Nombre, p.Ubicacion, p.idCompra, pd.idPedido_Detalle, pl.Precio FROM pedido p 
+    INNER JOIN pedido_detalle pd on p.idCompra = pd.Pedido_idCompra
+    INNER JOIN platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
+    INNER JOIN menu m on pl.Menu_idMenu = m.idMenu
+    INNER JOIN restaurante r on m.Restaurante_idRestaurante = r.idRestaurante
+    WHERE m.Restaurante_idRestaurante = ? AND p.idCompra = ?;`
+    db.query(query, [req.body.idRestaurante, req.body.idCompra], function(err,result){
+        respuesta.respuestaItems(err,result,res)
+    })
+})
+
 /** JFunez@09ABR2020 */
 router.put('/cambiarEstadoPedido', autenticar, function(req,res,next){
     const query = ` UPDATE pedido_detalle
