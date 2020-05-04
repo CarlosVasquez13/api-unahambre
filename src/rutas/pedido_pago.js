@@ -45,10 +45,10 @@ async function obtener_fotos_platillos(idPedido) {
                 ON idPlatillo = Platillo_idPlatillo
                 WHERE Pedido_idCompra = ?;`
     let fotos = [];
-   db.query(query,[idPedido], (err, result) => {
+    db.query(query, [idPedido], (err, result) => {
         if (!err) {
             for (let index = 0; index < result.length; index++) {
-                fotos[index] = result[index].Foto_Platillo               
+                fotos[index] = result[index].Foto_Platillo
             }
 
         }
@@ -84,7 +84,7 @@ router.post('/realizar_pago', autenticar, (req, res) => {
                 resultado.error = result[1][0].mensaje
                 res.send(resultado.error)
             } else {
-                if(req.body.metodoPago === 1) {
+                if (req.body.metodoPago === 1) {
                     // si se pagará en efectivo
                     resultado.error = result[1][0].mensaje
                     resultado.item = result[2][0].idPedido
@@ -93,46 +93,46 @@ router.post('/realizar_pago', autenticar, (req, res) => {
                 } else {
                     // PAGO CON TARJETA
                     (async () => {
-    
+
                         let fotos_platillos = await obtener_fotos_platillos(result[2][0].idPedido);
                         let total = await calc_total_pedido(result[2][0].idPedido);
-                         (async () => {
-                             // const customer = await stripe.customers.create({
-                             //     email: req.body.stripeEmail,
-                             //     source: req.body.stripeToken
-                             // });
-                             // console.log(customer.id)
-         
-         
-                             // const paymentMethods = await stripe.paymentMethods.list({
-                             //     customer: customer.id,
-                             //     type: 'card',
-                             // });
-                             // console.log(paymentMethods)
-                             // console.log(req.body)
-                             const session = await stripe.checkout.sessions.create({
-                                 //     // payment_intent_data: {
-                                 //     //     setup_future_usage: 'off_session',
-                                 //     // },
-                                 payment_method_types: ['card'],
-                                 line_items: [{
-                                     name: req.body.nombre, //'T-shirt',
-                                     description: req.body.descripcion, //'Comfortable cotton t-shirt',
-                                     images: fotos_platillos, //     ['https://example.com/t-shirt.png'],
-                                     amount: (total * 100),
-                                     currency: 'hnl',
-                                     quantity: 1,
-                                 }],
-                                 success_url: 'https://webunahambre.herokuapp.com/success.html',
-                                 cancel_url: 'https://webunahambre.herokuapp.com/cancel.html',
-                             });
-                             //  console.log(session)
-                             res.send({ "id": session, "idPedido": result[2][0].idPedido})
-                         })();
+                        (async () => {
+                            // const customer = await stripe.customers.create({
+                            //     email: req.body.stripeEmail,
+                            //     source: req.body.stripeToken
+                            // });
+                            // console.log(customer.id)
+
+
+                            // const paymentMethods = await stripe.paymentMethods.list({
+                            //     customer: customer.id,
+                            //     type: 'card',
+                            // });
+                            // console.log(paymentMethods)
+                            // console.log(req.body)
+                            const session = await stripe.checkout.sessions.create({
+                                //     // payment_intent_data: {
+                                //     //     setup_future_usage: 'off_session',
+                                //     // },
+                                payment_method_types: ['card'],
+                                line_items: [{
+                                    name: req.body.nombre, //'T-shirt',
+                                    description: req.body.descripcion, //'Comfortable cotton t-shirt',
+                                    images: fotos_platillos, //     ['https://example.com/t-shirt.png'],
+                                    amount: (total * 100),
+                                    currency: 'hnl',
+                                    quantity: 1,
+                                }],
+                                success_url: 'https://webunahambre.herokuapp.com/success.html',
+                                cancel_url: 'https://webunahambre.herokuapp.com/cancel.html',
+                            });
+                            //  console.log(session)
+                            res.send({ "id": session, "idPedido": result[2][0].idPedido })
+                        })();
                     })();
-                 
+
                 }
-                
+
 
 
             }
@@ -144,7 +144,7 @@ router.post('/realizar_pago', autenticar, (req, res) => {
 
 
 
-/****************<<<<<<<<Comprobar pago >>>>>>>>>>>>********** */
+/****************<<<<<<<<Comprobar pago de pedido >>>>>>>>>>>>********** */
 /**Cambirá el estado del pedido si se completo el pago, sino se eliminará el pedido */
 /**IN PI_ID_USUARIO INT,
 IN PI_ID_PEDIDO INT,
@@ -153,14 +153,27 @@ router.post('/verificar_pago', autenticar, (req, res, next) => {
     const { idUsuario, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
     const query = `CALL SP_VERIFICAR_PAGO(?, ?, @MENSAJE);
                     `
-    db.query(query, [req.body.idPedido, req.body.estadoPago], 
+    db.query(query, [req.body.idPedido, req.body.estadoPago],
         (err, result) => {
-            if (!err) {
-                console.log(result)
-                respuesta.respuestaError(err, result, res)
-            }
+            respuesta.respuestaError(err, result, res)
         })
 })
+
+
+/****************<<<<<<<< contratar plan publicidad>>>>>>>>>>>>********** */
+router.post('/contratar_plan', autenticar, (req, res, next) => {
+    const { id, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
+    const query = `CALL SP_CONTRARTAR_PLAN_PUBLICIDAD(?, ?, @Mensaje);Select @Mensaje as mensaje;`
+    if (rol === 1) {
+        db.query(query, [id, req.body.idPlan],
+            (err, result) => {
+                respuesta.respuestaError(err, result, res)
+            })
+    } else {
+        respuesta.respuestaError(err, 'accion no permitida', res)
+    }
+})
+
 
 
 module.exports = router
