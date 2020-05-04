@@ -195,11 +195,21 @@ router.post('/platillosRestaurante', autenticar, function (req, res, next) {
 router.post('/menusRestaurante', autenticar, function (req, res, next) {
     const query = `SELECT * FROM menu 
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
-  WHERE restaurante.idRestaurante = ?`
+  WHERE restaurante.idRestaurante = ? AND menu.Estado = 'A'`
     db.query(query, [req.body.idRestaurante], function (err, result) {
         
         respuesta.respuestaItems(err, result, res)
     })
+})
+
+/** JFunez@04MAY2020**/
+router.post('/platillos_menu', (req, res, next) => {
+    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM platillo 
+                    WHERE Menu_idMenu = ?`
+    db.query(query, [req.body.idMenu],
+        function (err, result) {
+            respuesta.respuestaItems(err, result, res)
+        })
 })
 
 /** JFunez@30MAR2020**/
