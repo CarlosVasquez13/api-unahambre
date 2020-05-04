@@ -29,9 +29,7 @@ router.post('/insertar-menu', autenticar, function (req, res, next) {
     const query = `CALL SP_INSERTAR_MENU(?,?,?,?,@Mensaje);Select @Mensaje as mensaje`;
     db.query(query, [req.body.tipoMenu, req.body.idRestaurante, req.body.fotoMenu, req.body.idCategoria],
         function (err, result, rows) {
-            let resultado = jsonResult;
-            resultado.error = result
-            res.send(resultado);
+            respuesta.respuestaError(err, result, res)
         }
 
     );
