@@ -185,7 +185,7 @@ router.post('/platillosRestaurante', autenticar, function (req, res, next) {
     const query = `SELECT * FROM platillo 
   INNER JOIN menu ON platillo.Menu_idMenu = menu.idMenu
   INNER JOIN restaurante ON menu.Restaurante_idRestaurante = restaurante.idRestaurante
-  WHERE restaurante.idRestaurante = ?`
+  WHERE restaurante.idRestaurante = ? AND platillo.Estado = 'A'`
     db.query(query, [req.body.idRestaurante], function (err, result) {
         respuesta.respuestaItems(err, result, res)
     })
