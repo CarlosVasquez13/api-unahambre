@@ -372,7 +372,9 @@ router.get('/admin_global_menus_restaurante', autenticar, function (req, res, ne
         const query = `SELECT idMenu, Tipo_Menu as Nombre_Menu, Fecha_Registro, Foto_Menu, idCategoria, Nombre_Local, Nombre_Usuario as Dueño_Local FROM Menu INNER JOIN Restaurante
               ON Restaurante_idRestaurante = idRestaurante
               INNER JOIN Usuario
-              ON idUsuario = Usuario_idUsuario`
+              ON idUsuario = Usuario_idUsuario
+                WHERE Menu.Estado = "A";
+              `
         db.query(query,
             function (err, result) {
                 respuesta.respuestaItems(err, result, res)
