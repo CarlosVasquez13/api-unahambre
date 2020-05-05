@@ -65,7 +65,7 @@ router.get('/g_mostrar_restaurantes', function (req, res, next) {
     const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Foto_Restaurante, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
                 INNER JOIN usuario
                 ON idUsuario = Usuario_idUsuario 
-                WHERE EstadoRestaurante = 'activo'
+                WHERE EstadoRestaurante = 'Activo'
             ;`
     db.query(query,
         function (err, result) {
@@ -79,7 +79,7 @@ router.get('/g_mostrar_restaurantes', function (req, res, next) {
 router.get('/g_mostrar_menus', function (req, res, next) {
     const query = `SELECT idMenu, Tipo_Menu, Fecha_Registro, Restaurante_idRestaurante, Foto_Menu, idCategoria FROM Menu INNER JOIN restaurante
                 ON idRestaurante = Restaurante_idRestaurante
-                WHERE EstadoRestaurante = 'activo';
+                WHERE EstadoRestaurante = 'activo' AND Menu.Estado = 'A';
                     `;
     db.query(query,
         function (err, result) {
@@ -97,7 +97,7 @@ router.get('/g_mostrar_platillos', function (req, res, next) {
     const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
                     INNER JOIN menu ON Menu_idMenu = idMenu
                     INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
-                    WHERE EstadoRestaurante = "Activo";`
+                    WHERE EstadoRestaurante = "Activo" AND platillo.Estado = "A";`
     db.query(query,
         function (err, result) {
            respuesta.respuestaItems(err, result, res)           
