@@ -393,7 +393,7 @@ router.get('/admin_global_platillos_menu', autenticar, function (req, res, next)
               ON Menu_idMenu = idMenu
               INNER JOIN Restaurante
               ON idRestaurante = Restaurante_idRestaurante
-              WHERE Menu.Estado = "A";`
+              WHERE Platillo.Estado = "A";`
         db.query(query,
             function (err, result) {
                 respuesta.respuestaItems(err, result, res)
