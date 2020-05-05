@@ -392,7 +392,8 @@ router.get('/admin_global_platillos_menu', autenticar, function (req, res, next)
         const query = `SELECT * FROM Platillo INNER JOIN Menu
               ON Menu_idMenu = idMenu
               INNER JOIN Restaurante
-              ON idRestaurante = Restaurante_idRestaurante;`
+              ON idRestaurante = Restaurante_idRestaurante
+              WHERE Menu.Estado = "A";`
         db.query(query,
             function (err, result) {
                 respuesta.respuestaItems(err, result, res)
