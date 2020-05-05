@@ -97,7 +97,7 @@ router.get('/g_mostrar_platillos', function (req, res, next) {
     const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
                     INNER JOIN menu ON Menu_idMenu = idMenu
                     INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
-                    WHERE EstadoRestaurante = "Activo";`
+                    WHERE EstadoRestaurante = "Activo" AND platillo.Estado = "A";`
     db.query(query,
         function (err, result) {
            respuesta.respuestaItems(err, result, res)           
