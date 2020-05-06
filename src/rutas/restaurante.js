@@ -36,8 +36,19 @@ router.post('/g_insertar-restaurante', autenticar, function (req, res, next) {
             function (err, result) {
                 if(!err) {
                     // mensaje del correo a enviar al usuario
-                    var mensaje = `Estimado cliente, le agradecemos por elegir trabajar con nosotros, pronto nos pondremos 
-                                    en contacto contigo para realizar las debidas verificaciones de tu negocio. Agradecemos la espera. Atte: Rquipo Unahambre
+                    var mensaje = `
+                                     <div>
+                                        <p>
+                                            Estimado cliente, tu solicitud de resgistro del local ${req.body.nombreRestaurante} está en proceso. Le agradecemos por elegir trabajar con nosotros, pronto nos pondremos
+                                            en contacto contigo para realizar las debidas verificaciones de tu negocio. Agradecemos la espera. 
+                                        </p>
+                                        <hr>
+                                        <p>
+                                            Atte: 
+                                            <a href="https://webunahambre.herokuapp.com/index.html">equipo Unahambre</a>
+                                            
+                                        </p>
+                                    </div>
                                     `    
                     enviar_correo(mensaje, req.body.correo, res)
                    

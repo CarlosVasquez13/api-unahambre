@@ -168,18 +168,31 @@ router.post('/contratar_plan', autenticar, (req, res, next) => {
     if (rol === 1) {
         db.query(query, [id, req.body.idPlan],
             (err, result) => {
-                /**
-                 *  if (!err) {
+                     if (!err) {
                     if (result[1][0].mensaje === null) {
                         let correo = result[2][0].correo
-                        let mensaje = ``;
+                        let mensaje = `
+                                        <div>
+                                            <h2>Servicios Unahambre</h2>
+                                            <p>
+                                                Estimado usuario tu solicitud de contrato de plan de publicidad está en proceso, pronto nos contactaremos contigo para completar el proceso de pago. 
+                                            </p>
+                                            <p>
+                                            <strong>Gracias por elegirnos.</strong> 
+                                            </p>
+                                            <hr>
+                                            <p>
+                                                AtteÑ <a href="https://webunahambre.herokuapp.com/index.html">Equipo Unahambre</a>
+                                            </p>
+                                        </div>
+                                        `;
                         (async () => {
                             let mail = await enviar_correo(mensaje, correo)
 
                         })();
                     }
                 }
-                 */
+                 
                
                 respuesta.respuestaError(err, result, res)
             })

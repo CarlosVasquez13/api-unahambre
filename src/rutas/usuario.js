@@ -82,7 +82,14 @@ router.post('/registrar_usuario', function (req, res, next) {
                 // Nota_cambios : agregar contenido al mensaje, por ahora no es posible crear una activación por correo
                 var mensaje = `<div>
                                 <h1>Hola ${req.body.nombreUsuario}</h1>
-                                <h2>Gracias por registrarte en nuestra plataforma.</h2>
+                                <p>Gracias por registrarte en nuestra plataforma. </p>
+                                <p>Ahora puedes acceder a todos los servicios que ofrecemos. Esperamos lo disfrutes y cualquier duda que tengas puedes comunicarte con nosotros.</p>
+                                <hr>
+                                <p>
+                                    Atte: 
+                                    <a href="https://webunahambre.herokuapp.com/index.html">equipo Unahambre</a>
+                                        
+                                </p>
                                </div>
                 `
                 try {
