@@ -304,6 +304,7 @@ router.put('/admin_local_modificar-platillo', autenticar, function (req, res, ne
 })
 
 
+
 /** CVasquez@09ABR2020**/
 /*platillos":, "idUsuario":, "idMetodoPago":, "ubicacion":, "tiempoEstimado": */
 router.post('/agregar_pedido', autenticar, function (req, res, next) {
@@ -313,7 +314,6 @@ router.post('/agregar_pedido', autenticar, function (req, res, next) {
             respuesta.respuestaError(err, result, res)
         })
 })
-
 
 /**
  * CVásquez@05MAY2020
@@ -407,6 +407,9 @@ router.post('/cambiar_foto_platillo', autenticar, async (req, res, next) => {
     fs.unlink(file.path);
     // console.log(result.url);
 });
+
+
+
 
 module.exports = router
 
