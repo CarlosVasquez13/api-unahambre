@@ -134,7 +134,7 @@ router.post('/datos_restaurante_propietario', (req, res, next) => {
  */
 router.post('/menus_restaurante', (req, res, next) => {
     const query = `SELECT idMenu, Tipo_Menu, Foto_Menu FROM menu 
-                    WHERE Restaurante_idRestaurante = ?`
+                    WHERE Restaurante_idRestaurante = ? AND menu.Estado = 'A'`;
     db.query(query, [req.body.idRestaurante],
         function (err, result){
             respuesta.respuestaItems(err, result, res)
@@ -148,7 +148,7 @@ router.post('/menus_restaurante', (req, res, next) => {
  */
 router.post('/platillos_menu', (req, res, next) => {
     const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM platillo 
-                    WHERE Menu_idMenu = ?`
+                    WHERE Menu_idMenu = ?  AND platillo.Estado = 'A';`
     db.query(query, [req.body.idMenu],
         function (err, result) {
             respuesta.respuestaItems(err, result, res)

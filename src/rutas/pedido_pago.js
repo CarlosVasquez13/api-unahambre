@@ -3,6 +3,7 @@ const jsonResult = require('../models/result')
 const router = express.Router()
 const db = require('../connection/conexion')
 const jwt = require('jsonwebtoken')
+const enviar_correo = require('../models/mail_service')
 
 const respuesta = require('../models/respuesta')
 const autenticar = require('../middlewares/autentication')
@@ -163,10 +164,23 @@ router.post('/verificar_pago', autenticar, (req, res, next) => {
 /****************<<<<<<<< contratar plan publicidad>>>>>>>>>>>>********** */
 router.post('/contratar_plan', autenticar, (req, res, next) => {
     const { id, rol } = decodedJWT_all_usuarios(req.headers['access-token'])
-    const query = `CALL SP_CONTRARTAR_PLAN_PUBLICIDAD(?, ?, @Mensaje);Select @Mensaje as mensaje;`
+    const query = `CALL SP_CONTRARTAR_PLAN_PUBLICIDAD(?, ?, @correo, @Mensaje);Select @Mensaje as mensaje; select @correo as correo;`
     if (rol === 1) {
         db.query(query, [id, req.body.idPlan],
             (err, result) => {
+                /**
+                 *  if (!err) {
+                    if (result[1][0].mensaje === null) {
+                        let correo = result[2][0].correo
+                        let mensaje = ``;
+                        (async () => {
+                            let mail = await enviar_correo(mensaje, correo)
+
+                        })();
+                    }
+                }
+                 */
+               
                 respuesta.respuestaError(err, result, res)
             })
     } else {
