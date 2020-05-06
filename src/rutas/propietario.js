@@ -9,8 +9,19 @@ const db = require('../connection/conexion')
 const autenticar = require('../middlewares/autentication')
 const jwt = require('jsonwebtoken')
 const respuesta = require('../models/respuesta')
+const cloudinary = require('../configs/credenciales')
+const fs = require('fs-extra');
 
 
+
+// CVásquez@05MAY2020
+// Sacar el id y rol del usuario que hace la petición. 
+function decodedJWT_all_usuarios(token) {
+    const token_decoded = jwt.verify(token, 'llave')
+    const id = token_decoded.id
+    const rol = token_decoded.rol
+    return { id, rol }
+}
 
 
 /* POST Insertar Platillo */
@@ -303,6 +314,99 @@ router.post('/agregar_pedido', autenticar, function (req, res, next) {
         })
 })
 
+
+/**
+ * CVásquez@05MAY2020
+ * headers: id-menu, access-token
+ */
+router.post('/cambiar_foto_menu', autenticar, async (req, res, next) => {
+
+    const { idAdmin, rol } = decodedJWT_all_usuarios(req.headers['access-token'], res)
+    let file = req.file;
+    if (rol === 1) {
+        let id = req.headers['id-menu'];
+        let indice = file.filename.indexOf(".")
+        let id_publica = file.filename.substring(0, indice)
+        const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'menus', user_filename: true })
+        const query = `SELECT Foto_Menu FROM menu Where idMenu = ?;
+                        UPDATE menu SET Foto_Menu = ? WHERE idMenu = ?`;
+        db.query(query, [id, resultado_cloudinary.url, id],
+            async function (err, result) {
+                if (!err) {
+                    console.log('Image Uploaded');
+                    const old_image = result[0][0].Foto_Menu
+                    let id_publica
+                    if (old_image != null) {
+                        if (old_image.length > 60) {
+                            let old_image_split = old_image.split('/')
+                            id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))
+                        }
+                    }
+                    try {
+                        // Borra la vieja foto de perfil 
+                        let eliminar = await cloudinary.uploader.destroy('menus/' + id_publica, function (error, result) {
+                            console.log(result, error)
+                        });
+                    } catch (error) {
+                        console.log('complete')
+                    }
+                }
+
+            });
+
+        // console.log(result.url);
+        res.send(resultado_cloudinary.url);
+    }
+    fs.unlink(file.path);
+});
+
+
+
+
+/**
+ * CVásquez@06MAY2020
+ * headers: id-platillo, access-token
+ */
+router.post('/cambiar_foto_platillo', autenticar, async (req, res, next) => {
+
+    const { idAdmin, rol } = decodedJWT_all_usuarios(req.headers['access-token'], res)
+    let file = req.file;
+    if (rol === 1) {
+
+        let id = req.headers['id-platillo'];
+        let indice = file.filename.indexOf(".")
+        let id_publica = file.filename.substring(0, indice)
+        const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'platillo', user_filename: true })
+        const query = `SELECT Foto_Platillo FROM platillo Where idPlatillo = ?;
+                        UPDATE platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
+        db.query(query, [id, resultado_cloudinary.url, id],
+            async function (err, result) {
+                if (!err) {
+                    console.log('Image Uploaded');
+                    const old_image = result[0][0].Foto_Platillo
+                    let id_publica
+                    if (old_image != null) {
+                        if (old_image.length > 60) {
+                            let old_image_split = old_image.split('/')
+                            id_publica = old_image_split[8].substring(0, old_image_split[8].indexOf("."))
+                        }
+                    }
+                    try {
+                        // Borra la vieja foto de perfil 
+                        let eliminar = await cloudinary.uploader.destroy('platillo/' + id_publica, function (error, result) {
+                            console.log(result, error)
+                        });
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+
+            });
+        res.send(resultado_cloudinary.url);
+    }
+    fs.unlink(file.path);
+    // console.log(result.url);
+});
 
 module.exports = router
 
