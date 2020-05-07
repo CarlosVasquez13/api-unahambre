@@ -308,7 +308,7 @@ router.get('/mostrar_pedidos', autenticar, (req, res, next) => {
                     INNER JOIN platillo ON idPlatillo = Platillo_idPlatillo
                     WHERE Id_Usuario = ?;
                 `
-    db.query(query, [id],
+    db.query(query,
         (err, result) => {
             respuesta.respuestaItems(err, result, res)
         } )
