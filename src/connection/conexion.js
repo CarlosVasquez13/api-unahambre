@@ -2,7 +2,19 @@
 
 /** Montada la BD a Azure JFunez@15032020 #SprintDeCarlosAmaya */
 const mysql = require('mysql');
-var connection = mysql.createConnection({
+
+var connection = mysql.createConnection({ 
+    host: "unahmbredb.mysql.database.azure.com", 
+    user: "unahambre@unahmbredb", 
+    password: "holamundo_01", 
+    database: "unahambre", 
+    multipleStatements: true,
+    ssl: true
+   });
+
+/**
+ * 
+ * var connection = mysql.createConnection({
     host: 'devuh.mysql.database.azure.com',
     user: 'rootuh@devuh',
     password: 'UH_password',
@@ -10,9 +22,11 @@ var connection = mysql.createConnection({
     multipleStatements: true,
     ssl: true
 });
+ */
+
 
 connection.connect(function (err) {
-    if(err) {
+    if (err) {
         console.log(err)
         return
     } else {
