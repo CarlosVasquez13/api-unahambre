@@ -25,7 +25,7 @@ router.post('/', function (req, res, next) {
                 resultado.items = result
                 // console.log('Este es el rol del usuario: ', resultado.items[4][0].Rol )
                 // console.log(resultado.items[2][0].usuario)
-                if (resultado.items[2][0].usuario != undefined) {
+                if (resultado.items[2][0].usuario != undefined && resultado.items[2][0].usuario != 'Usuario no valido' ) {
                     const payload = {
                         check: true,
                         Usuario: resultado.items[2][0].usuario,
