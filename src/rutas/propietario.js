@@ -262,12 +262,9 @@ router.put('/admin-borrar-local', autenticar, function (req, res, next) {
         })
 })
 
-/**Robindroide
-MODIFICAR PLATILLOS PARA ADMIN
-*/
 router.put('/admin_local_modificar-platillo', autenticar, function (req, res, next) {
-    const query = `CALL SP_LOCAL_EDITAR_PLATILLO(?, ?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
-    db.query(query, [req.body.descripcion, req.body.nombrePlatillo, req.body.precio, req.body.fotoPlatillo, req.body.idMenu, req.body.idTipoPlatillo],
+    const query = `CALL SP_LOCAL_EDITAR_PLATILLO(?,?, ?, ?, ?, ?, ?, @MENSAJE); SELECT @MENSAJE AS mensaje;`
+    db.query(query, [req.body.idPlatillo, req.body.descripcion, req.body.nombrePlatillo, req.body.precio, req.body.fotoPlatillo, req.body.idMenu, req.body.idTipoPlatillo],
         function (err, result) {
             let resultado = jsonResult
             if (err) resultado.error = err;
