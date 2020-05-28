@@ -167,5 +167,41 @@ router.post('/platillos_menu', (req, res, next) => {
 })
 
 
+router.get('/banners', (req, res, next) => {
+    const query = `SELECT Plan_idPlan,
+  Banner,
+  Foto_Pop_ups,
+  Restaurante_idRestaurante,
+  Menu_idMenu,
+  Platillo_idPlatillo FROM restaurante_has_publicidad`
+    db.query(query,
+        function(err, result) {
+            if (!err) {
+                var array_publicidad = result
+                var rand_id = Math.floor(Math.random() * array_publicidad.length);
+                respuesta.respuestaItems(err, array_publicidad[rand_id], res)
+            } else {
+                respuesta.respuestaError(err, result, res)
+            }
+        })
+})
+
+router.get('/pop_ups', (req, res, next) => {
+    const query = `SELECT Plan_idPlan,
+        Foto_Pop_ups,
+        Restaurante_idRestaurante,
+        Menu_idMenu,
+        Platillo_idPlatillo FROM restaurante_has_publicidad WHERE Plan_idPlan = 2 OR Plan_idPlan = 1;`
+    db.query(query,
+        function (err, result) {
+            if(!err) {
+                var array_publicidad = result
+                var rand_id = Math.floor(Math.random() * array_publicidad.length);
+                respuesta.respuestaItems(err, array_publicidad[rand_id], res)
+            } else {
+                respuesta.respuestaError(err, result, res)
+            }
+        })
+})
 
 module.exports = router
