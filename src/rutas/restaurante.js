@@ -166,7 +166,9 @@ router.post('/platillos_menu', (req, res, next) => {
         })
 })
 
-
+/**
+ * CVasquez@28MAY2020
+ */
 router.get('/banners', (req, res, next) => {
     const query = `SELECT Plan_idPlan,
   Banner,
@@ -185,7 +187,9 @@ router.get('/banners', (req, res, next) => {
             }
         })
 })
-
+/**
+ * CVasquez@28MAY2020
+ */
 router.get('/pop_ups', (req, res, next) => {
     const query = `SELECT Plan_idPlan,
         Foto_Pop_ups,

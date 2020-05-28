@@ -680,5 +680,22 @@ router.get('/mostrar_historial_transacciones', autenticar, function (req, res, n
     }
 })
 
+/**
+ * CVasquez@28MAY2020
+ */
+router.get('/mostrar_publicidad_contratada', autenticar, (req, res, next) => {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
 
+    const query = `SELECT * FROM restaurante_has_publicidad;`
+    if (rol === 0) {
+        db.query(query,
+            (err, result) => {
+                if (!err) {
+                    respuesta.respuestaItems(err, result, res)
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+            })
+    }
+})
 module.exports = router
