@@ -702,4 +702,47 @@ router.get('/mostrar_publicidad_contratada', autenticar, (req, res, next) => {
             })
     }
 })
+
+// https://res.cloudinary.com/unahambre/image/upload/v1590693009/publicidad/banner_nlrae9.jpg
+// https://res.cloudinary.com/unahambre/image/upload/v1590693102/publicidad/WhatsApp_Image_2020-05-28_at_12.16.29_PM_i9naet.jpg
+router.post('/editar_pop_up', autenticar, (req, res, next) => {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+
+    const query = `UPDATE restaurante_has_publicidad
+        SET Foto_Pop_ups = '${req.body.popup}'
+    WHERE idRestaurante_has_publicidad = ${req.body.id};`
+    
+    if (rol === 0) {
+        db.query(query, 
+            (err, result) => {
+                if (!err) {
+                    respuesta.respuestaError(err, result, res)
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+            })
+    }
+})
+
+
+router.post('/editar_banner', autenticar, (req, res, next) => {
+    const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
+
+    const query = `UPDATE restaurante_has_publicidad
+        SET Banner = '${req.body.banner}'
+    WHERE idRestaurante_has_publicidad = ${req.body.id};`
+
+    if (rol === 0) {
+        db.query(query,
+            (err, result) => {
+                if (!err) {
+                    respuesta.respuestaError(err, result, res)
+                } else {
+                    respuesta.respuestaError(err, result, res)
+                }
+            })
+    }
+})
+
+
 module.exports = router

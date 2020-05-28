@@ -171,11 +171,13 @@ router.post('/platillos_menu', (req, res, next) => {
  */
 router.get('/banners', (req, res, next) => {
     const query = `SELECT Plan_idPlan,
-  Banner,
-  Foto_Pop_ups,
-  Restaurante_idRestaurante,
-  Menu_idMenu,
-  Platillo_idPlatillo FROM restaurante_has_publicidad`
+    Banner,
+    Foto_Pop_ups,
+    Restaurante_idRestaurante,
+    Menu_idMenu,
+    Platillo_idPlatillo, Nombre_Local FROM restaurante_has_publicidad 
+    INNER JOIN restaurante 
+    ON idRestaurante = Restaurante_idRestaurante;`
     db.query(query,
         function(err, result) {
             if (!err) {
