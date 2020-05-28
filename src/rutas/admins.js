@@ -686,7 +686,7 @@ router.get('/mostrar_historial_transacciones', autenticar, function (req, res, n
 router.get('/mostrar_publicidad_contratada', autenticar, (req, res, next) => {
     const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
 
-    const query = `SELECT Nombre_Usuario, Nombre_Local, Plan_idPlan, Banner, Foto_Pop_ups, Menu_idMenu, Platillo_idPlatillo FROM restaurante_has_publicidad
+    const query = `SELECT Nombre_Usuario, Nombre_Local, Plan_idPlan, Banner, Foto_Pop_ups, Menu_idMenu, Platillo_idPlatillo, Fecha FROM restaurante_has_publicidad
     INNER JOIN usuario 
     ON idUsuario = Usuario_idUsuario
     INNER JOIN restaurante
