@@ -192,7 +192,7 @@ router.post('/admin_global_eliminar_usuario',  autenticar, function (req, res, n
 router.post('/admin_gobal_solicitud_filtro_estado',  autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol === 0) {
-        const query = `SELECT * FROM solicitud INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
+        const query = `SELECT * FROM solicitud INNER JOIN Restaurante ON Restaurante_idRestaurante = idRestaurante
                   WHERE EstadoSolicitud = ?`
         db.query(query, [req.body.estadoSolicitud],
             function (err, result) {
@@ -337,7 +337,7 @@ router.post('/admin_global_editar_platillo',  autenticar, function (req, res, ne
 router.post('/admin_global_borrar_platillo', autenticar, function (req, res, next) {
     const { id, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
     if (rol == 0) {
-        const query = `UPDATE platillo SET Estado = 'I'  WHERE idPlatillo = ?`
+        const query = `UPDATE Platillo SET Estado = 'I'  WHERE idPlatillo = ?`
         db.query(query, [req.body.idPlatillo],
             function (err, result) {
                 respuesta.respuestaError (err, result, res)
@@ -440,8 +440,8 @@ router.post('/cambiar_foto_platillo', autenticar, async (req, res, next) => {
         let indice = file.filename.indexOf(".")
         let id_publica = file.filename.substring(0, indice)
         const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'platillo', user_filename: true })
-        const query = `SELECT Foto_Platillo FROM platillo Where idPlatillo = ?;
-                        UPDATE platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
+        const query = `SELECT Foto_Platillo FROM Platillo Where idPlatillo = ?;
+                        UPDATE Platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
         db.query(query, [id, resultado_cloudinary.url, id],
             async function (err, result) {            
                 if (!err) {
@@ -484,8 +484,8 @@ router.post('/cambiar_foto_menu', autenticar, async (req, res, next) => {
         let indice = file.filename.indexOf(".")
         let id_publica = file.filename.substring(0, indice)
         const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'menus', user_filename: true })
-        const query = `SELECT Foto_Menu FROM menu Where idMenu = ?;
-                        UPDATE menu SET Foto_Menu = ? WHERE idMenu = ?`;
+        const query = `SELECT Foto_Menu FROM Menu Where idMenu = ?;
+                        UPDATE Menu SET Foto_Menu = ? WHERE idMenu = ?`;
         db.query(query, [id, resultado_cloudinary.url, id],
             async function (err, result) {
                 if (!err) {
@@ -531,8 +531,8 @@ router.post('/cambiar_foto_restaurante', autenticar, async (req, res, next) => {
             let indice = file.filename.indexOf(".")
             let id_publica = file.filename.substring(0, indice)
         const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'restaurant', user_filename: true })
-            const query = `SELECT Foto_Restaurante FROM restaurante Where idRestaurante = ?;
-                            UPDATE restaurante SET Foto_Restaurante = ? WHERE idRestaurante = ?`;
+            const query = `SELECT Foto_Restaurante FROM Restaurante Where idRestaurante = ?;
+                            UPDATE Restaurante SET Foto_Restaurante = ? WHERE idRestaurante = ?`;
             db.query(query, [id, resultado_cloudinary.url, id],
                 async function (err, result) {
                     if (!err) {
@@ -574,7 +574,7 @@ router.get('/admin_global_mostrar_solicitudes', autenticar, function (req, res, 
         const query = `SELECT idsolicitud, Restaurante_idRestaurante, Descripcion, EstadoSolicitud,
       FechaSolicitud, idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, EstadoRestaurante,
       Usuario_idUsuario, Nombre_Usuario
-      FROM solicitud INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
+      FROM solicitud INNER JOIN Restaurante ON Restaurante_idRestaurante = idRestaurante
                         INNER JOIN usuario ON Usuario_idUsuario = idUsuario;`
         db.query(query,
             function (err, result) {
@@ -664,7 +664,7 @@ router.get('/mostrar_historial_transacciones', autenticar, function (req, res, n
     const query = `SELECT idHistorial_Transaccion, Pedido_idPedido, Monto, Restaurante_idRestaurante, Fecha_Transaccion,
                     Nombre_Local, Nombre_Usuario
                     FROM historial_transaccion
-                    INNER JOIN restaurante ON idRestaurante = historial_transaccion.Restaurante_idRestaurante
+                    INNER JOIN Restaurante ON idRestaurante = historial_transaccion.Restaurante_idRestaurante
                     INNER JOIN pedido ON idCompra = Pedido_idPedido
                     INNER JOIN usuario ON idUsuario = Id_Usuario
                 `
@@ -689,7 +689,7 @@ router.get('/mostrar_publicidad_contratada', autenticar, (req, res, next) => {
     const query = `SELECT idRestaurante_has_publicidad, Nombre_Usuario, Nombre_Local, Plan_idPlan, Banner, Foto_Pop_ups, Restaurante_idRestaurante, Menu_idMenu, Platillo_idPlatillo, Fecha FROM restaurante_has_publicidad
         INNER JOIN usuario 
         ON idUsuario = Usuario_idUsuario
-        INNER JOIN restaurante
+        INNER JOIN Restaurante
         ON idRestaurante = Restaurante_idRestaurante;`
     if (rol === 0) {
         db.query(query,

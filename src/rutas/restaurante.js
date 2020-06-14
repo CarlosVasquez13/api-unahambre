@@ -105,8 +105,8 @@ router.get('/g_mostrar_menus', function (req, res, next) {
  */
 
 router.get('/g_mostrar_platillos', function (req, res, next) {
-    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
-                    INNER JOIN menu ON Menu_idMenu = idMenu
+    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
+                    INNER JOIN Menu ON Menu_idMenu = idMenu
                     INNER JOIN Restaurante ON Restaurante_idRestaurante = idRestaurante
                     WHERE EstadoRestaurante = "Activo" AND platillo.Estado = "A";`
     db.query(query,
@@ -144,8 +144,8 @@ router.post('/datos_restaurante_propietario', (req, res, next) => {
  *idRestaurante
  */
 router.post('/menus_restaurante', (req, res, next) => {
-    const query = `SELECT idMenu, Tipo_Menu, Foto_Menu FROM menu 
-                    WHERE Restaurante_idRestaurante = ? AND menu.Estado = 'A'`;
+    const query = `SELECT idMenu, Tipo_Menu, Foto_Menu FROM Menu 
+                    WHERE Restaurante_idRestaurante = ? AND Menu.Estado = 'A'`;
     db.query(query, [req.body.idRestaurante],
         function (err, result) {
             respuesta.respuestaItems(err, result, res)
@@ -154,7 +154,7 @@ router.post('/menus_restaurante', (req, res, next) => {
 
 /**
  * CVasquez@04MAR2020
- *Retorna los platillos que pertenecen a un menu
+ *Retorna los platillos que pertenecen a un Menu
  *idMenu
  */
 router.post('/platillos_menu', (req, res, next) => {

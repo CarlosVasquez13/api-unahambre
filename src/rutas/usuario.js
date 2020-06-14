@@ -289,7 +289,7 @@ router.put('/modificar-valoracion-platillo', autenticar, function (req, res, nex
  * MOSTRAR VALORACION DE UN PLATILLO
  */
 router.get('/mostrar-valoracion-platillo', function (req, res, next) {
-    const query = `SELECT Valoracion_Gplatillo FROM platillo WHERE idPlatillo = ?;
+    const query = `SELECT Valoracion_Gplatillo FROM Platillo WHERE idPlatillo = ?;
                     `;
     db.query(query, [req.body.idPlatillo],
         function (err, result) {
@@ -305,7 +305,7 @@ router.get('/mostrar_pedidos', autenticar, (req, res, next) => {
                     Nombre, Descripcion, Valoracion_Gplatillo, Foto_Platillo
                     FROM pedido
                     INNER JOIN pedido_detalle ON Pedido_idCompra = idCompra
-                    INNER JOIN platillo ON idPlatillo = Platillo_idPlatillo
+                    INNER JOIN Platillo ON idPlatillo = Platillo_idPlatillo
                     WHERE Id_Usuario = ?;
                 `
     db.query(query, [id],
