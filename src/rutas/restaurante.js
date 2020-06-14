@@ -108,7 +108,7 @@ router.get('/g_mostrar_platillos', function (req, res, next) {
     const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
                     INNER JOIN Menu ON Menu_idMenu = idMenu
                     INNER JOIN Restaurante ON Restaurante_idRestaurante = idRestaurante
-                    WHERE EstadoRestaurante = "Activo" AND platillo.Estado = "A";`
+                    WHERE EstadoRestaurante = "Activo" AND Platillo.Estado = "A";`
     db.query(query,
         function (err, result) {
             respuesta.respuestaItems(err, result, res)
@@ -158,8 +158,8 @@ router.post('/menus_restaurante', (req, res, next) => {
  *idMenu
  */
 router.post('/platillos_menu', (req, res, next) => {
-    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM platillo 
-                    WHERE Menu_idMenu = ?  AND platillo.Estado = 'A';`
+    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM Platillo 
+                    WHERE Menu_idMenu = ?  AND Platillo.Estado = 'A';`
     db.query(query, [req.body.idMenu],
         function (err, result) {
             respuesta.respuestaItems(err, result, res)

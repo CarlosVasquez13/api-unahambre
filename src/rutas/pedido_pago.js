@@ -23,7 +23,7 @@ function decodedJWT_all_usuarios(token) {
 /**CVásquez@24ABR2020 */
 async function calc_total_pedido(idPedido) {
     let total
-    const query = `SELECT SUM(Precio) as total FROM pedido_detalle INNER JOIN platillo
+    const query = `SELECT SUM(Precio) as total FROM pedido_detalle INNER JOIN Platillo
     ON idPlatillo =  Platillo_idPlatillo
     WHERE Pedido_idCompra = ?;
     `
@@ -42,7 +42,7 @@ async function calc_total_pedido(idPedido) {
 // obtener las fotos de los platillos del pedido
 /**CVásquez@24ABR2020 */
 async function obtener_fotos_platillos(idPedido) {
-    const query = `SELECT Foto_Platillo FROM platillo INNER JOIN pedido_detalle
+    const query = `SELECT Foto_Platillo FROM Platillo INNER JOIN pedido_detalle
                 ON idPlatillo = Platillo_idPlatillo
                 WHERE Pedido_idCompra = ?;`
     let fotos = [];

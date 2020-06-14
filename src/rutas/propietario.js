@@ -104,7 +104,7 @@ router.post('/eliminar-menu', autenticar, function (req, res, next) {
 router.post('/pedidosRestaurante', autenticar, function (req,res,next){
     const query = `SELECT p.Fecha_Registro, pl.Nombre, p.Ubicacion, pd.Estado, p.idCompra, pd.idPedido_Detalle FROM pedido p 
     INNER JOIN pedido_detalle pd on p.idCompra = pd.Pedido_idCompra
-    INNER JOIN platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
+    INNER JOIN Platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
     INNER JOIN Menu m on pl.Menu_idMenu = m.idMenu
     INNER JOIN Restaurante r on m.Restaurante_idRestaurante = r.idRestaurante
     WHERE m.Restaurante_idRestaurante = ? AND pd.estado <> '' AND p.estado <> 'H'`
@@ -117,7 +117,7 @@ router.post('/pedidosRestaurante', autenticar, function (req,res,next){
 router.post('/historialEspecificoRestaurante', autenticar, function (req,res,next){
     const query = `SELECT p.Fecha_Registro, pl.Nombre, p.Ubicacion, pd.Estado, p.idCompra, pd.idPedido_Detalle FROM pedido p 
     INNER JOIN pedido_detalle pd on p.idCompra = pd.Pedido_idCompra
-    INNER JOIN platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
+    INNER JOIN Platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
     INNER JOIN Menu m on pl.Menu_idMenu = m.idMenu
     INNER JOIN Restaurante r on m.Restaurante_idRestaurante = r.idRestaurante
     WHERE m.Restaurante_idRestaurante = ? AND pd.estado <> '' AND p.estado = 'H'`
@@ -142,7 +142,7 @@ router.post('/historialGeneralRestaurante', autenticar, function (req,res,next){
 router.post('/obtenerPedidoDetalle', autenticar, function (req,res,next){
     const query = `SELECT p.Fecha_Registro, pl.Nombre, p.Ubicacion, p.idCompra, pd.idPedido_Detalle, pl.Precio FROM pedido p 
     INNER JOIN pedido_detalle pd on p.idCompra = pd.Pedido_idCompra
-    INNER JOIN platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
+    INNER JOIN Platillo pl on pd.Platillo_idPlatillo = pl.idPlatillo
     INNER JOIN Menu m on pl.Menu_idMenu = m.idMenu
     INNER JOIN Restaurante r on m.Restaurante_idRestaurante = r.idRestaurante
     WHERE m.Restaurante_idRestaurante = ? AND p.idCompra = ?;`
@@ -172,10 +172,10 @@ router.post('/moverPedidosAHistorial', autenticar, function(req,res){
 })
 /** JFunez@30MAR2020**/
 router.post('/platillosRestaurante', autenticar, function (req, res, next) {
-    const query = `SELECT * FROM platillo 
-  INNER JOIN Menu ON platillo.Menu_idMenu = Menu.idMenu
+    const query = `SELECT * FROM Platillo 
+  INNER JOIN Menu ON Platillo.Menu_idMenu = Menu.idMenu
   INNER JOIN Restaurante ON Menu.Restaurante_idRestaurante = Restaurante.idRestaurante
-  WHERE Restaurante.idRestaurante = ? AND platillo.Estado = 'A'`
+  WHERE Restaurante.idRestaurante = ? AND Platillo.Estado = 'A'`
     db.query(query, [req.body.idRestaurante], function (err, result) {
         respuesta.respuestaItems(err, result, res)
     })
@@ -194,7 +194,7 @@ router.post('/menusRestaurante', autenticar, function (req, res, next) {
 
 /** JFunez@04MAY2020**/
 router.post('/platillos_menu', (req, res, next) => {
-    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM platillo 
+    const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, Foto_Platillo FROM Platillo 
                     WHERE Menu_idMenu = ?`
     db.query(query, [req.body.idMenu],
         function (err, result) {
@@ -204,8 +204,8 @@ router.post('/platillos_menu', (req, res, next) => {
 
 /** JFunez@30MAR2020**/
 router.post('/platillosRestaurante', autenticar, function (req, res, next) {
-    const query = `SELECT * FROM platillo 
-  INNER JOIN Menu ON platillo.Menu_idMenu = Menu.idMenu
+    const query = `SELECT * FROM Platillo 
+  INNER JOIN Menu ON Platillo.Menu_idMenu = Menu.idMenu
   INNER JOIN Restaurante ON Menu.Restaurante_idRestaurante = Restaurante.idRestaurante
   WHERE Restaurante.idRestaurante = ?`
     db.query(query, [req.body.idRestaurante], function (err, result) {
@@ -353,8 +353,8 @@ router.post('/cambiar_foto_platillo', autenticar, async (req, res, next) => {
         let indice = file.filename.indexOf(".")
         let id_publica = file.filename.substring(0, indice)
         const resultado_cloudinary = await cloudinary.uploader.upload(file.path, { public_id: id_publica, folder: 'platillo', user_filename: true })
-        const query = `SELECT Foto_Platillo FROM platillo Where idPlatillo = ?;
-                        UPDATE platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
+        const query = `SELECT Foto_Platillo FROM Platillo Where idPlatillo = ?;
+                        UPDATE Platillo SET Foto_Platillo = ? WHERE idPlatillo = ?`;
         db.query(query, [id, resultado_cloudinary.url, id],
             async function (err, result) {
                 if (!err) {
