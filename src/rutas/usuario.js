@@ -18,7 +18,7 @@ router.post('/prueba', (req, res, next) => {
 
 
 // CVásquez@03MAY2020
-// Sacar el id y rol del usuario que hace la petición. 
+// Sacar el id y rol del Usuario que hace la petición. 
 function decodedJWT_all_usuarios(token) {
     const token_decoded = jwt.verify(token, 'llave')
     const id = token_decoded.id
@@ -35,8 +35,8 @@ router.post('/upload-profile-pic', autenticar, async (req, res, next) => {
     let indice = file.filename.indexOf(".")
     let id_publica = file.filename.substring(0, indice)
     const result = await cloudinary.uploader.upload(file.path, {public_id: id_publica, folder: 'profile_pics', user_filename: true})
-    const query = `SELECT Foto_Perfil FROM usuario Where idUsuario = ?;
-                    UPDATE usuario SET Foto_Perfil = ? WHERE idUsuario = ?`;
+    const query = `SELECT Foto_Perfil FROM Usuario Where idUsuario = ?;
+                    UPDATE Usuario SET Foto_Perfil = ? WHERE idUsuario = ?`;
     db.query(query, [id, result.url, id],
         async function (err, result) {
             if (!err) {
@@ -68,7 +68,7 @@ router.post('/upload-profile-pic', autenticar, async (req, res, next) => {
 
 /**
 * CVasquez@02Mar2020
-*Si el mensaje está vacio entonces el usuario se registro correctamente, sino entonces el mensaje
+*Si el mensaje está vacio entonces el Usuario se registro correctamente, sino entonces el mensaje
 *no estará vacio.
 * De esta forma debe acceder frontend al error, si el error es nulo el sp se ejecutò correctamente
 * sino, que gestionen la excepciòn
@@ -106,7 +106,7 @@ router.post('/registrar_usuario', function (req, res, next) {
 
 
 /** CVásquez@17MAR2020
- *Obtener la información del usuario que ya está debidamente logueado
+ *Obtener la información del Usuario que ya está debidamente logueado
  *Se recibe desde frontend el idUsuario
  *Se retorna la info de las tablas usurio y persona
  */
@@ -123,7 +123,7 @@ router.post('/informacion_usuario', autenticar, function (req, res, next) {
 })
 
 /** CVásquez@13MAR2020
- *Cambiar nombreUsuario, Celular de un usuario
+ *Cambiar nombreUsuario, Celular de un Usuario
  *Parametros del JSON a recibir, idUsuario, nombreUsuario, nuevoNombre, celular.
  *La respuesta, error.mensaje, irá null si los cambios se completaron con exito.
  */
@@ -137,7 +137,7 @@ router.post('/informacion_usuario', autenticar, function (req, res, next) {
 	"nuevoNombre": "",
   "nuevoApellido": "Primero" }
  */
-// /api/cambiar-info-usuario
+// /api/cambiar-info-Usuario
 router.put('/cambiar_informacion_usuario', autenticar, function (req, res, next) {
     if (req.body.nuevoUsuario == "") req.body.nuevoUsuario = null;
     if (req.body.celular == "") req.body.celular = null;
@@ -152,7 +152,7 @@ router.put('/cambiar_informacion_usuario', autenticar, function (req, res, next)
 
 
 /** CVásquez@08MAR2020
- * Cambio de contraseña para los usuarios, recibe: usuario, contrasena, nueva_contrasena
+ * Cambio de contraseña para los usuarios, recibe: Usuario, contrasena, nueva_contrasena
  *Si se logro el completar el cambio entonces el mensaje en el error sera null, caso contrario el mensaje no estará null
  *También se comprueba si la contraseña actual es la correcta, sino el cambio no se realiza
  *error. mensaje llevará la respuesta para frontend.
@@ -179,7 +179,7 @@ router.post('/cambiar-contrasena', autenticar, function (req, res, next) {
 
 /** CVásquez@08MAR2020
  * RECUPERAR CONTRASEÑA
- * Si el correo ingresado existe, entonces se le enviará la contraseña al usuario a dicho correo
+ * Si el correo ingresado existe, entonces se le enviará la contraseña al Usuario a dicho correo
  * devuelve un 1 o 0  para frontend
  */
 router.post('/recuperar_password', function (req, res, next) {

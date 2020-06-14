@@ -13,7 +13,7 @@ const fs = require('fs-extra');
 
 
 // CVásquez@1ABR2020
-// Sacar el id y rol del usuario adminUsuario que la petición. 
+// Sacar el id y rol del Usuario adminUsuario que la petición. 
 function decodedJWT_admin_usuarios(token, res) {
     const token_decoded = jwt.verify(token,'llave')
     const id = token_decoded.id
@@ -67,7 +67,7 @@ router.post('/admin_global_insertar_usuario',  autenticar, function (req, res, n
 router.get('/g_mostrar_restaurantes',autenticar, function (req, res, next) {
 
     const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
-INNER JOIN usuario
+INNER JOIN Usuario
 WHERE idUsuario = Usuario_idUsuario`
     db.query(query,
         function (err, result) {
@@ -575,7 +575,7 @@ router.get('/admin_global_mostrar_solicitudes', autenticar, function (req, res, 
       FechaSolicitud, idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, EstadoRestaurante,
       Usuario_idUsuario, Nombre_Usuario
       FROM solicitud INNER JOIN Restaurante ON Restaurante_idRestaurante = idRestaurante
-                        INNER JOIN usuario ON Usuario_idUsuario = idUsuario;`
+                        INNER JOIN Usuario ON Usuario_idUsuario = idUsuario;`
         db.query(query,
             function (err, result) {
                 // respuesta.respuestaItems(err, result, res)
@@ -666,7 +666,7 @@ router.get('/mostrar_historial_transacciones', autenticar, function (req, res, n
                     FROM historial_transaccion
                     INNER JOIN Restaurante ON idRestaurante = historial_transaccion.Restaurante_idRestaurante
                     INNER JOIN pedido ON idCompra = Pedido_idPedido
-                    INNER JOIN usuario ON idUsuario = Id_Usuario
+                    INNER JOIN Usuario ON idUsuario = Id_Usuario
                 `
     if (rol === 0) {
         db.query(query, 
@@ -687,7 +687,7 @@ router.get('/mostrar_publicidad_contratada', autenticar, (req, res, next) => {
     const { idAdmin, rol } = decodedJWT_admin_usuarios(req.headers['access-token'], res)
 
     const query = `SELECT idRestaurante_has_publicidad, Nombre_Usuario, Nombre_Local, Plan_idPlan, Banner, Foto_Pop_ups, Restaurante_idRestaurante, Menu_idMenu, Platillo_idPlatillo, Fecha FROM restaurante_has_publicidad
-        INNER JOIN usuario 
+        INNER JOIN Usuario 
         ON idUsuario = Usuario_idUsuario
         INNER JOIN Restaurante
         ON idRestaurante = Restaurante_idRestaurante;`

@@ -12,7 +12,7 @@ const db = require('../connection/conexion')
 
 // POST PARA LOGIN
 router.post('/', function (req, res, next) {
-    const query = `CALL SP_LOGIN(?, ?, @id, @Usuario, @Mensaje, @Foto); SELECT @id as id; SELECT @Usuario as usuario; SELECT @Mensaje as mensaje; SELECT Rol_idRol as Rol FROM Usuario_has_Rol WHERE Usuario_idUsuario = (SELECT @id as id); SELECT @Foto AS foto;`;
+    const query = `CALL SP_LOGIN(?, ?, @id, @Usuario, @Mensaje, @Foto); SELECT @id as id; SELECT @Usuario as usuario; SELECT @Mensaje as mensaje; SELECT Rol_idRol as Rol FROM usuario_has_rol WHERE Usuario_idUsuario = (SELECT @id as id); SELECT @Foto AS foto;`;
     db.query(query, [req.body.usuario, req.body.contrasena],
         function (err, result) {            
             let resultado = jsonResult

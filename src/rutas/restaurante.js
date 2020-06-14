@@ -35,7 +35,7 @@ router.post('/g_insertar-restaurante', autenticar, function (req, res, next) {
     db.query(query, [req.body.idUsuario, req.body.rolUsuario, req.body.nombreRestaurante, req.body.telefono, req.body.correo, req.body.ubicacion],
         function (err, result) {
             if (!err) {
-                // mensaje del correo a enviar al usuario
+                // mensaje del correo a enviar al Usuario
                 var mensaje = `
                                      <div>
                                         <p>
@@ -74,7 +74,7 @@ router.post('/g_insertar-restaurante', autenticar, function (req, res, next) {
 router.get('/g_mostrar_restaurantes', function (req, res, next) {
 
     const query = `SELECT idRestaurante, Nombre_Local, Telefono, Correo, Ubicacion, Foto_Restaurante, Usuario_idUsuario, EstadoRestaurante, Nombre_Usuario FROM Restaurante
-                INNER JOIN usuario
+                INNER JOIN Usuario
                 ON idUsuario = Usuario_idUsuario 
                 WHERE EstadoRestaurante = 'Activo'
             ;`
@@ -126,10 +126,10 @@ router.get('/g_mostrar_platillos', function (req, res, next) {
  */
 router.post('/datos_restaurante_propietario', (req, res, next) => {
 
-    const query = `SELECT Restaurante.Nombre_Local, Restaurante.Foto_Restaurante, Restaurante.Correo, Restaurante.Telefono, Restaurante.Ubicacion, usuario.Foto_Perfil, persona.Nombre, persona.Apellidos FROM Restaurante INNER JOIN usuario 
+    const query = `SELECT Restaurante.Nombre_Local, Restaurante.Foto_Restaurante, Restaurante.Correo, Restaurante.Telefono, Restaurante.Ubicacion, Usuario.Foto_Perfil, persona.Nombre, persona.Apellidos FROM Restaurante INNER JOIN Usuario 
                     ON Usuario_idUsuario = idUsuario
                     INNER JOIN persona
-                    ON usuario.Persona_idPersona = persona.idPersona
+                    ON Usuario.Persona_idPersona = persona.idPersona
                     WHERE idRestaurante = ?;`
     db.query(query, [req.body.idRestaurante],
         function (err, result) {
