@@ -3,7 +3,7 @@
  * Aquí estarán las rutas para :
  * mostrar información en el landing.
  * mostrar información en la pag de menus.
- * ruta para registrar un nuevo restaurante.
+ * ruta para registrar un nuevo Restaurante.
  */
 
 const express = require('express')
@@ -53,7 +53,7 @@ router.post('/g_insertar-restaurante', autenticar, function (req, res, next) {
                     enviar_correo(mensaje, req.body.correo, res)
                    
                     /**
-                     * Nota_cambios: crear otro estado para el restaurante y verificar el rol del cliente
+                     * Nota_cambios: crear otro estado para el Restaurante y verificar el rol del cliente
                      * Mejorar el mensaje a enviar al cliente
                      * 
                      */
@@ -88,7 +88,7 @@ router.get('/g_mostrar_restaurantes', function (req, res, next) {
 
 //Retorna todos los menus en la base
 router.get('/g_mostrar_menus', function (req, res, next) {
-    const query = `SELECT idMenu, Tipo_Menu, Fecha_Registro, Restaurante_idRestaurante, Foto_Menu, idCategoria FROM Menu INNER JOIN restaurante
+    const query = `SELECT idMenu, Tipo_Menu, Fecha_Registro, Restaurante_idRestaurante, Foto_Menu, idCategoria FROM Menu INNER JOIN Restaurante
                 ON idRestaurante = Restaurante_idRestaurante
                 WHERE EstadoRestaurante = 'activo' AND Menu.Estado = 'A';
                     `;
@@ -107,7 +107,7 @@ router.get('/g_mostrar_menus', function (req, res, next) {
 router.get('/g_mostrar_platillos', function (req, res, next) {
     const query = `SELECT idPlatillo, Nombre, Descripcion, Precio, menu.Fecha_Registro, Foto_Platillo, Menu_idMenu, Tipo_Platillo_idTipo_Platillo FROM Platillo
                     INNER JOIN menu ON Menu_idMenu = idMenu
-                    INNER JOIN restaurante ON Restaurante_idRestaurante = idRestaurante
+                    INNER JOIN Restaurante ON Restaurante_idRestaurante = idRestaurante
                     WHERE EstadoRestaurante = "Activo" AND platillo.Estado = "A";`
     db.query(query,
         function (err, result) {
@@ -122,11 +122,11 @@ router.get('/g_mostrar_platillos', function (req, res, next) {
 /***********<<<<PRUEBAS, BORRAR LUEGO>>>>************************ */
 /**
  * CVasquez@04MAR2020
- * retorna los datos del restaurante y el propietario
+ * retorna los datos del Restaurante y el propietario
  */
 router.post('/datos_restaurante_propietario', (req, res, next) => {
     
-    const query = `SELECT restaurante.Nombre_Local, restaurante.Foto_Restaurante, restaurante.Correo, restaurante.Telefono, restaurante.Ubicacion, usuario.Foto_Perfil, persona.Nombre, persona.Apellidos FROM restaurante INNER JOIN usuario 
+    const query = `SELECT Restaurante.Nombre_Local, Restaurante.Foto_Restaurante, Restaurante.Correo, Restaurante.Telefono, Restaurante.Ubicacion, usuario.Foto_Perfil, persona.Nombre, persona.Apellidos FROM Restaurante INNER JOIN usuario 
                     ON Usuario_idUsuario = idUsuario
                     INNER JOIN persona
                     ON usuario.Persona_idPersona = persona.idPersona
@@ -140,7 +140,7 @@ router.post('/datos_restaurante_propietario', (req, res, next) => {
 
 /**
  * CVasquez@04MAR2020
- *Retorna los menus que pertenecen a un restaurante
+ *Retorna los menus que pertenecen a un Restaurante
  *idRestaurante
  */
 router.post('/menus_restaurante', (req, res, next) => {
@@ -176,7 +176,7 @@ router.get('/banners', (req, res, next) => {
     Restaurante_idRestaurante,
     Menu_idMenu,
     Platillo_idPlatillo, Nombre_Local FROM restaurante_has_publicidad 
-    INNER JOIN restaurante 
+    INNER JOIN Restaurante 
     ON idRestaurante = Restaurante_idRestaurante;`
     db.query(query,
         function(err, result) {
