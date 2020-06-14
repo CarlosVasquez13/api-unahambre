@@ -3,6 +3,16 @@
 /** Montada la BD a Azure JFunez@15032020 #SprintDeCarlosAmaya */
 const mysql = require('mysql');
 
+var connection = mysql.createConnection({
+    host: "bfbzesxhsrhxfbobpi0s-mysql.services.clever-cloud.com",
+    user: "uchrptzaiac1awan",
+    password: "uYqRsQLK2v4nq8RSyArG",
+    database: "bfbzesxhsrhxfbobpi0s",
+    multipleStatements: true,
+    ssl: true
+})
+
+/* 
 var connection = mysql.createConnection({ 
     host: "unahmbredb.mysql.database.azure.com", 
     user: "unahambre@unahmbredb", 
@@ -10,8 +20,8 @@ var connection = mysql.createConnection({
     database: "unahambre", 
     multipleStatements: true,
     ssl: true
-   });
-
+});
+ */
 /**
  * 
  * var connection = mysql.createConnection({
